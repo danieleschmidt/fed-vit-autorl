@@ -1,0 +1,67 @@
+scoring:
+  weights:
+    nascent:
+      wsjf: 0.4
+      ice: 0.3
+      technicalDebt: 0.2
+      security: 0.1
+    developing:
+      wsjf: 0.5
+      ice: 0.2
+      technicalDebt: 0.2
+      security: 0.1
+    maturing:
+      wsjf: 0.6
+      ice: 0.1
+      technicalDebt: 0.2
+      security: 0.1
+    advanced:
+      wsjf: 0.5
+      ice: 0.1
+      technicalDebt: 0.3
+      security: 0.1
+
+  thresholds:
+    minScore: 10
+    maxRisk: 0.8
+    securityBoost: 2.0
+    complianceBoost: 1.8
+
+discovery:
+  sources:
+    - gitHistory
+    - staticAnalysis
+    - issueTrackers
+    - vulnerabilityDatabases
+    - performanceMonitoring
+    - userFeedback
+
+  tools:
+    staticAnalysis:
+      - ruff
+      - mypy
+      - bandit
+      - safety
+    security:
+      - snyk
+      - dependabot
+      - trivy
+    performance:
+      - pytest-benchmark
+      - memory-profiler
+
+execution:
+  maxConcurrentTasks: 1
+  testRequirements:
+    minCoverage: 80
+    performanceRegression: 5
+  rollbackTriggers:
+    - testFailure
+    - buildFailure
+    - securityViolation
+
+repository:
+  maturityLevel: "nascent"
+  primaryLanguage: "python"
+  framework: "federated-learning"
+  lastAssessment: "2025-08-01T00:00:00Z"
