@@ -1,0 +1,243 @@
+{
+  "repository": {
+    "name": "Fed-ViT-AutoRL",
+    "maturityLevel": "nascent",
+    "maturityScore": 15,
+    "lastAssessment": "2025-08-01T00:00:00Z"
+  },
+  "executionHistory": [],
+  "backlogMetrics": {
+    "totalItems": 0,
+    "averageAge": 0,
+    "debtRatio": 0.95,
+    "velocityTrend": "initial"
+  },
+  "valueDelivered": {
+    "totalScore": 0,
+    "weeklyScore": 0,
+    "monthlyScore": 0,
+    "completedTasks": 0
+  },
+  "continuousDiscovery": {
+    "lastScan": "2025-08-01T02:29:45.173397",
+    "discoveredItems": 11,
+    "prioritizedItems": 0,
+    "executedItems": 0
+  },
+  "initialGaps": [
+    {
+      "category": "foundation",
+      "item": "Missing package configuration (pyproject.toml/setup.py)",
+      "priority": "high",
+      "estimatedValue": 85
+    },
+    {
+      "category": "foundation",
+      "item": "No source code implementation exists",
+      "priority": "high",
+      "estimatedValue": 90
+    },
+    {
+      "category": "testing",
+      "item": "No testing infrastructure",
+      "priority": "high",
+      "estimatedValue": 80
+    },
+    {
+      "category": "documentation",
+      "item": "Missing development and contribution guidelines",
+      "priority": "medium",
+      "estimatedValue": 65
+    },
+    {
+      "category": "security",
+      "item": "No security scanning or SECURITY.md",
+      "priority": "medium",
+      "estimatedValue": 70
+    },
+    {
+      "category": "automation",
+      "item": "No CI/CD workflows",
+      "priority": "medium",
+      "estimatedValue": 75
+    }
+  ],
+  "discoveredItems": [
+    {
+      "id": "comment-9741",
+      "title": "Address comment in ./.terragon/scripts/value-discovery.py:37",
+      "category": "technical-debt",
+      "source": "code-comments",
+      "description": "# 3. TODO/FIXME extraction",
+      "estimatedEffort": 1,
+      "priority": "high",
+      "discoveredAt": "2025-08-01T02:29:42.905516",
+      "scores": {
+        "wsjf": 24.0,
+        "ice": 486,
+        "technicalDebt": 8,
+        "composite": 2.58
+      }
+    },
+    {
+      "id": "comment-6329",
+      "title": "Address comment in ./.terragon/scripts/value-discovery.py:114",
+      "category": "technical-debt",
+      "source": "code-comments",
+      "description": "\"\"\"Extract TODO, FIXME, HACK comments from code.\"\"\"",
+      "estimatedEffort": 1,
+      "priority": "high",
+      "discoveredAt": "2025-08-01T02:29:42.905544",
+      "scores": {
+        "wsjf": 24.0,
+        "ice": 486,
+        "technicalDebt": 8,
+        "composite": 2.58
+      }
+    },
+    {
+      "id": "comment-4334",
+      "title": "Address comment in ./.terragon/scripts/value-discovery.py:121",
+      "category": "technical-debt",
+      "source": "code-comments",
+      "description": "r\"TODO\\|FIXME\\|HACK\\|BUG\", \".\"",
+      "estimatedEffort": 1,
+      "priority": "high",
+      "discoveredAt": "2025-08-01T02:29:42.905548",
+      "scores": {
+        "wsjf": 24.0,
+        "ice": 486,
+        "technicalDebt": 8,
+        "composite": 2.58
+      }
+    },
+    {
+      "id": "comment-4836",
+      "title": "Address comment in ./.terragon/scripts/value-discovery.py:138",
+      "category": "technical-debt",
+      "source": "code-comments",
+      "description": "'priority': 'high' if 'FIXME' in comment.upper() else 'medium',",
+      "estimatedEffort": 1,
+      "priority": "high",
+      "discoveredAt": "2025-08-01T02:29:42.905551",
+      "scores": {
+        "wsjf": 24.0,
+        "ice": 486,
+        "technicalDebt": 8,
+        "composite": 2.58
+      }
+    },
+    {
+      "id": "comment-3030",
+      "title": "Address comment in ./.terragon/scripts/value-discovery.py:53",
+      "category": "technical-debt",
+      "source": "code-comments",
+      "description": "# Get recent commits with \"fix\", \"hack\", \"todo\" etc.",
+      "estimatedEffort": 1,
+      "priority": "medium",
+      "discoveredAt": "2025-08-01T02:29:42.905535",
+      "scores": {
+        "wsjf": 21.0,
+        "ice": 486,
+        "technicalDebt": 8,
+        "composite": 2.46
+      }
+    },
+    {
+      "id": "comment-5037",
+      "title": "Address comment in ./.terragon/scripts/value-discovery.py:56",
+      "category": "technical-debt",
+      "source": "code-comments",
+      "description": "\"--grep=hack\", \"--grep=todo\", \"--grep=temporary\", \"-i\"",
+      "estimatedEffort": 1,
+      "priority": "medium",
+      "discoveredAt": "2025-08-01T02:29:42.905540",
+      "scores": {
+        "wsjf": 21.0,
+        "ice": 486,
+        "technicalDebt": 8,
+        "composite": 2.46
+      }
+    },
+    {
+      "id": "dep-blinker",
+      "title": "Update blinker from 1.7.0 to 1.9.0",
+      "category": "dependency-update",
+      "source": "dependency-analysis",
+      "description": "Package blinker is outdated",
+      "estimatedEffort": 0.5,
+      "priority": "low",
+      "discoveredAt": "2025-08-01T02:29:45.172748",
+      "scores": {
+        "wsjf": 28.0,
+        "ice": 342.0,
+        "technicalDebt": 4,
+        "composite": 2.23
+      }
+    },
+    {
+      "id": "dep-cryptography",
+      "title": "Update cryptography from 41.0.7 to 45.0.5",
+      "category": "dependency-update",
+      "source": "dependency-analysis",
+      "description": "Package cryptography is outdated",
+      "estimatedEffort": 0.5,
+      "priority": "low",
+      "discoveredAt": "2025-08-01T02:29:45.172770",
+      "scores": {
+        "wsjf": 28.0,
+        "ice": 342.0,
+        "technicalDebt": 4,
+        "composite": 2.23
+      }
+    },
+    {
+      "id": "dep-dbus-python",
+      "title": "Update dbus-python from 1.3.2 to 1.4.0",
+      "category": "dependency-update",
+      "source": "dependency-analysis",
+      "description": "Package dbus-python is outdated",
+      "estimatedEffort": 0.5,
+      "priority": "low",
+      "discoveredAt": "2025-08-01T02:29:45.172774",
+      "scores": {
+        "wsjf": 28.0,
+        "ice": 342.0,
+        "technicalDebt": 4,
+        "composite": 2.23
+      }
+    },
+    {
+      "id": "dep-httplib2",
+      "title": "Update httplib2 from 0.20.4 to 0.22.0",
+      "category": "dependency-update",
+      "source": "dependency-analysis",
+      "description": "Package httplib2 is outdated",
+      "estimatedEffort": 0.5,
+      "priority": "low",
+      "discoveredAt": "2025-08-01T02:29:45.172778",
+      "scores": {
+        "wsjf": 28.0,
+        "ice": 342.0,
+        "technicalDebt": 4,
+        "composite": 2.23
+      }
+    },
+    {
+      "id": "dep-launchpadlib",
+      "title": "Update launchpadlib from 1.11.0 to 2.1.0",
+      "category": "dependency-update",
+      "source": "dependency-analysis",
+      "description": "Package launchpadlib is outdated",
+      "estimatedEffort": 0.5,
+      "priority": "low",
+      "discoveredAt": "2025-08-01T02:29:45.172781",
+      "scores": {
+        "wsjf": 28.0,
+        "ice": 342.0,
+        "technicalDebt": 4,
+        "composite": 2.23
+      }
+    }
+  ]
+}
