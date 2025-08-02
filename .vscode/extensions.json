@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.black-formatter",
+    "charliermarsh.ruff",
+    "ms-python.mypy-type-checker",
+    "ms-toolsai.jupyter",
+    "redhat.vscode-yaml",
+    "ms-vscode.makefile-tools",
+    "github.copilot",
+    "eamodio.gitlens",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode.vscode-json",
+    "tamasfe.even-better-toml"
+  ]
+}
