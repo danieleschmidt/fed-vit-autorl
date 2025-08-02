@@ -1,0 +1,524 @@
+# Performance Monitoring Workflow for Fed-ViT-AutoRL
+#
+# This workflow tracks performance metrics, benchmarks, and regressions
+# to ensure optimal performance across releases.
+#
+# MANUAL SETUP REQUIRED:
+# 1. Copy this file to .github/workflows/performance.yml
+# 2. Set up performance baseline storage
+# 3. Configure notification channels
+# 4. Enable GPU runners if needed
+
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run performance monitoring daily at 3 AM UTC
+    - cron: '0 3 * * *'
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      benchmark_type:
+        description: 'Type of benchmark to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - inference
+          - training
+          - memory
+          - federated
+      comparison_branch:
+        description: 'Branch to compare against'
+        required: false
+        default: 'main'
+        type: string
+
+env:
+  PYTHON_VERSION: "3.11"
+  BENCHMARK_ITERATIONS: 10
+  WARMUP_ITERATIONS: 3
+
+jobs:
+  # =============================================================================
+  # Inference Performance Benchmarks
+  # =============================================================================
+  inference-benchmarks:
+    name: Inference Performance
+    runs-on: ubuntu-latest  # Use GPU runner if available: runs-on: [self-hosted, gpu]
+    if: github.event.inputs.benchmark_type == 'inference' || github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == ''
+    strategy:
+      matrix:
+        model_config:
+          - name: "vit-base-224"
+            img_size: 224
+            patch_size: 16
+          - name: "vit-base-384"
+            img_size: 384
+            patch_size: 16
+        batch_size: [1, 4, 8, 16]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pytest-benchmark psutil
+          
+      - name: Run inference benchmarks
+        env:
+          MODEL_CONFIG: ${{ matrix.model_config.name }}
+          IMG_SIZE: ${{ matrix.model_config.img_size }}
+          PATCH_SIZE: ${{ matrix.model_config.patch_size }}
+          BATCH_SIZE: ${{ matrix.batch_size }}
+        run: |
+          pytest tests/benchmarks/test_model_performance.py::TestModelPerformanceBenchmarks::test_vit_batch_inference_scaling \
+            -v --benchmark-only \
+            --benchmark-json="benchmark-inference-${{ matrix.model_config.name }}-batch${{ matrix.batch_size }}.json" \
+            --benchmark-warmup-iterations=${{ env.WARMUP_ITERATIONS }} \
+            --benchmark-min-rounds=${{ env.BENCHMARK_ITERATIONS }}
+            
+      - name: Upload inference benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: inference-benchmarks-${{ matrix.model_config.name }}-batch${{ matrix.batch_size }}
+          path: benchmark-inference-*.json
+
+  # =============================================================================
+  # Training Performance Benchmarks
+  # =============================================================================
+  training-benchmarks:
+    name: Training Performance
+    runs-on: ubuntu-latest
+    if: github.event.inputs.benchmark_type == 'training' || github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == ''
+    strategy:
+      matrix:
+        optimizer: ["adam", "sgd", "adamw"]
+        batch_size: [8, 16, 32]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pytest-benchmark
+          
+      - name: Run training benchmarks
+        env:
+          OPTIMIZER: ${{ matrix.optimizer }}
+          BATCH_SIZE: ${{ matrix.batch_size }}
+        run: |
+          pytest tests/benchmarks/test_model_performance.py::TestModelPerformanceBenchmarks::test_training_throughput_benchmark \
+            -v --benchmark-only \
+            --benchmark-json="benchmark-training-${{ matrix.optimizer }}-batch${{ matrix.batch_size }}.json" \
+            --benchmark-warmup-iterations=${{ env.WARMUP_ITERATIONS }} \
+            --benchmark-min-rounds=${{ env.BENCHMARK_ITERATIONS }}
+            
+      - name: Upload training benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-benchmarks-${{ matrix.optimizer }}-batch${{ matrix.batch_size }}
+          path: benchmark-training-*.json
+
+  # =============================================================================
+  # Memory Usage Benchmarks
+  # =============================================================================
+  memory-benchmarks:
+    name: Memory Usage Analysis
+    runs-on: ubuntu-latest
+    if: github.event.inputs.benchmark_type == 'memory' || github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install memory-profiler psutil
+          
+      - name: Run memory benchmarks
+        run: |
+          pytest tests/benchmarks/test_model_performance.py::TestModelPerformanceBenchmarks::test_memory_usage_benchmark \
+            -v --tb=short -s
+            
+      - name: Profile memory usage
+        run: |
+          python -c "
+          import torch
+          from fed_vit_autorl.models.vit_perception import ViTPerception
+          import psutil
+          import json
+          
+          process = psutil.Process()
+          initial_memory = process.memory_info().rss / 1024 / 1024
+          
+          # Test different model sizes
+          results = {}
+          for img_size in [224, 384]:
+              model = ViTPerception(img_size=img_size)
+              model_memory = process.memory_info().rss / 1024 / 1024 - initial_memory
+              
+              # Forward pass
+              sample_input = torch.randn(1, 3, img_size, img_size)
+              with torch.no_grad():
+                  output = model(sample_input)
+              forward_memory = process.memory_info().rss / 1024 / 1024 - initial_memory
+              
+              results[f'vit_{img_size}'] = {
+                  'model_memory_mb': model_memory,
+                  'forward_memory_mb': forward_memory,
+                  'parameters': sum(p.numel() for p in model.parameters())
+              }
+              
+              del model, sample_input, output
+              
+          with open('memory-profile.json', 'w') as f:
+              json.dump(results, f, indent=2)
+          "
+          
+      - name: Upload memory analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-benchmarks
+          path: memory-profile.json
+
+  # =============================================================================
+  # Federated Learning Performance
+  # =============================================================================
+  federated-benchmarks:
+    name: Federated Learning Performance
+    runs-on: ubuntu-latest
+    if: github.event.inputs.benchmark_type == 'federated' || github.event.inputs.benchmark_type == 'all' || github.event.inputs.benchmark_type == ''
+    strategy:
+      matrix:
+        num_clients: [5, 10, 20]
+        aggregation: ["fedavg", "fedprox"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pytest-benchmark
+          
+      - name: Run federated learning benchmarks
+        env:
+          NUM_CLIENTS: ${{ matrix.num_clients }}
+          AGGREGATION: ${{ matrix.aggregation }}
+        run: |
+          pytest tests/integration/test_federated_training.py::TestFederatedTrainingIntegration::test_scalability_with_multiple_clients \
+            -v --benchmark-auto-save \
+            --benchmark-json="benchmark-federated-${{ matrix.aggregation }}-clients${{ matrix.num_clients }}.json"
+            
+      - name: Upload federated benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: federated-benchmarks-${{ matrix.aggregation }}-clients${{ matrix.num_clients }}
+          path: benchmark-federated-*.json
+
+  # =============================================================================
+  # Performance Regression Analysis
+  # =============================================================================
+  regression-analysis:
+    name: Performance Regression Analysis
+    runs-on: ubuntu-latest
+    needs: [inference-benchmarks, training-benchmarks, memory-benchmarks, federated-benchmarks]
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Download all benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*-benchmarks*"
+          path: current-benchmarks/
+          
+      - name: Checkout comparison branch
+        run: |
+          COMPARISON_BRANCH="${{ github.event.inputs.comparison_branch || 'main' }}"
+          git checkout $COMPARISON_BRANCH
+          
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pytest-benchmark
+          
+      - name: Run baseline benchmarks
+        continue-on-error: true
+        run: |
+          # Run key benchmarks for comparison
+          pytest tests/benchmarks/test_model_performance.py::TestModelPerformanceBenchmarks::test_vit_inference_latency_benchmark \
+            -v --benchmark-only --benchmark-json=baseline-inference.json
+            
+          pytest tests/benchmarks/test_model_performance.py::TestModelPerformanceBenchmarks::test_training_throughput_benchmark \
+            -v --benchmark-only --benchmark-json=baseline-training.json
+            
+      - name: Compare performance
+        run: |
+          python -c "
+          import json
+          import os
+          import glob
+          
+          def load_benchmark(file_path):
+              try:
+                  with open(file_path) as f:
+                      data = json.load(f)
+                  return data['benchmarks'][0]['stats']['mean'] if data.get('benchmarks') else None
+              except:
+                  return None
+          
+          # Load baseline results
+          baseline_inference = load_benchmark('baseline-inference.json')
+          baseline_training = load_benchmark('baseline-training.json')
+          
+          # Load current results
+          current_files = glob.glob('current-benchmarks/**/benchmark-*.json', recursive=True)
+          
+          regressions = []
+          improvements = []
+          
+          for file_path in current_files:
+              current_result = load_benchmark(file_path)
+              if current_result:
+                  benchmark_name = os.path.basename(file_path)
+                  
+                  if 'inference' in benchmark_name and baseline_inference:
+                      change = (current_result - baseline_inference) / baseline_inference * 100
+                      if change > 10:  # More than 10% slower
+                          regressions.append(f'{benchmark_name}: {change:.1f}% slower')
+                      elif change < -10:  # More than 10% faster
+                          improvements.append(f'{benchmark_name}: {abs(change):.1f}% faster')
+                  
+                  elif 'training' in benchmark_name and baseline_training:
+                      change = (current_result - baseline_training) / baseline_training * 100
+                      if change > 10:
+                          regressions.append(f'{benchmark_name}: {change:.1f}% slower')
+                      elif change < -10:
+                          improvements.append(f'{benchmark_name}: {abs(change):.1f}% faster')
+          
+          # Generate report
+          report = []
+          report.append('## 📊 Performance Analysis Report\\n')
+          
+          if regressions:
+              report.append('### ⚠️ Performance Regressions Detected\\n')
+              for regression in regressions:
+                  report.append(f'- {regression}')
+              report.append('')
+          
+          if improvements:
+              report.append('### ✅ Performance Improvements\\n')
+              for improvement in improvements:
+                  report.append(f'- {improvement}')
+              report.append('')
+          
+          if not regressions and not improvements:
+              report.append('### ✅ No Significant Performance Changes\\n')
+              report.append('Performance is within acceptable thresholds (±10%).\\n')
+          
+          with open('performance-report.md', 'w') as f:
+              f.write('\\n'.join(report))
+          
+          # Set output for workflow status
+          if regressions:
+              print('PERFORMANCE_REGRESSION=true')
+              with open(os.environ['GITHUB_ENV'], 'a') as f:
+                  f.write('PERFORMANCE_REGRESSION=true\\n')
+          else:
+              print('PERFORMANCE_REGRESSION=false')
+              with open(os.environ['GITHUB_ENV'], 'a') as f:
+                  f.write('PERFORMANCE_REGRESSION=false\\n')
+          "
+          
+      - name: Comment PR with performance analysis
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: performance-analysis
+          path: performance-report.md
+          
+      - name: Fail on performance regression
+        if: env.PERFORMANCE_REGRESSION == 'true'
+        run: |
+          echo "❌ Performance regression detected!"
+          echo "Please review the performance analysis and optimize if necessary."
+          exit 1
+
+  # =============================================================================
+  # Performance Dashboard Update
+  # =============================================================================
+  update-dashboard:
+    name: Update Performance Dashboard
+    runs-on: ubuntu-latest
+    needs: [inference-benchmarks, training-benchmarks, memory-benchmarks, federated-benchmarks]
+    if: always() && (github.ref == 'refs/heads/main' || github.event_name == 'release')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download all benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*-benchmarks*"
+          path: benchmarks/
+          
+      - name: Generate performance dashboard data
+        run: |
+          python -c "
+          import json
+          import glob
+          import os
+          from datetime import datetime
+          
+          # Collect all benchmark results
+          dashboard_data = {
+              'timestamp': datetime.utcnow().isoformat(),
+              'commit': '${{ github.sha }}',
+              'branch': '${{ github.ref_name }}',
+              'benchmarks': {}
+          }
+          
+          benchmark_files = glob.glob('benchmarks/**/benchmark-*.json', recursive=True)
+          
+          for file_path in benchmark_files:
+              try:
+                  with open(file_path) as f:
+                      data = json.load(f)
+                  
+                  benchmark_name = os.path.basename(file_path).replace('.json', '')
+                  
+                  if data.get('benchmarks'):
+                      benchmark_info = data['benchmarks'][0]
+                      dashboard_data['benchmarks'][benchmark_name] = {
+                          'mean': benchmark_info['stats']['mean'],
+                          'stddev': benchmark_info['stats']['stddev'],
+                          'min': benchmark_info['stats']['min'],
+                          'max': benchmark_info['stats']['max'],
+                          'unit': benchmark_info.get('unit', 'seconds')
+                      }
+              except Exception as e:
+                  print(f'Error processing {file_path}: {e}')
+          
+          # Save dashboard data
+          with open('performance-dashboard.json', 'w') as f:
+              json.dump(dashboard_data, f, indent=2)
+          "
+          
+      - name: Upload dashboard data
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-dashboard
+          path: performance-dashboard.json
+          
+      - name: Commit performance data
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          mkdir -p .github/performance-data
+          cp performance-dashboard.json .github/performance-data/$(date +%Y%m%d-%H%M%S).json
+          
+          if ! git diff --quiet; then
+            git add .github/performance-data/
+            git commit -m "perf: update performance dashboard data [skip ci]"
+            git push
+          fi
+
+  # =============================================================================
+  # Performance Summary
+  # =============================================================================
+  performance-summary:
+    name: Performance Summary
+    runs-on: ubuntu-latest
+    needs: [inference-benchmarks, training-benchmarks, memory-benchmarks, federated-benchmarks, regression-analysis]
+    if: always()
+    steps:
+      - name: Generate performance summary
+        run: |
+          cat > performance-summary.md << 'EOF'
+          # 🚀 Performance Monitoring Summary
+          
+          ## Benchmark Results
+          
+          | Component | Status | Details |
+          |-----------|---------|---------|
+          | Inference | ${{ needs.inference-benchmarks.result == 'success' && '✅ PASSED' || '❌ FAILED' }} | Latency and throughput benchmarks |
+          | Training | ${{ needs.training-benchmarks.result == 'success' && '✅ PASSED' || '❌ FAILED' }} | Training speed and memory usage |
+          | Memory | ${{ needs.memory-benchmarks.result == 'success' && '✅ PASSED' || '❌ FAILED' }} | Memory profiling and optimization |
+          | Federated | ${{ needs.federated-benchmarks.result == 'success' && '✅ PASSED' || '❌ FAILED' }} | Multi-client performance |
+          | Regression | ${{ needs.regression-analysis.result == 'success' && '✅ PASSED' || needs.regression-analysis.result == 'skipped' && '⏭️ SKIPPED' || '❌ FAILED' }} | Performance regression analysis |
+          
+          ## Key Metrics
+          
+          - **Inference Latency**: Target <100ms ⚡
+          - **Training Throughput**: Samples per second 📊
+          - **Memory Usage**: Peak memory consumption 💾
+          - **Federated Scalability**: Multi-client performance 🌐
+          
+          ## Next Steps
+          
+          1. Review detailed benchmark results in artifacts
+          2. Address any performance regressions
+          3. Update performance baselines if improvements are significant
+          4. Monitor trends in the performance dashboard
+          
+          ---
+          
+          *Generated by performance monitoring workflow*  
+          *Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}*
+          EOF
+          
+      - name: Upload performance summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-summary
+          path: performance-summary.md
