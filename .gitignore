@@ -205,3 +205,93 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Fed-ViT-AutoRL specific
+# Data directories
+data/
+datasets/
+!data/.gitkeep
+!datasets/.gitkeep
+
+# Model artifacts
+models/
+weights/
+checkpoints/
+!models/.gitkeep
+!weights/.gitkeep
+!checkpoints/.gitkeep
+
+# Logs and metrics
+logs/
+runs/
+experiments/
+tensorboard/
+wandb/
+mlflow/
+!logs/.gitkeep
+
+# Cache directories
+cache/
+.cache/
+__cache__/
+
+# CARLA simulation
+CarlaUE4/
+carla-*
+CARLA_*
+
+# Edge deployment
+*.onnx
+*.engine
+*.trt
+*.plan
+*.wts
+
+# GPU and CUDA
+*.fatbin
+*.cubin
+*.ptx
+
+# Jupyter temporary files
+.jupyter/
+jupyter_config.py
+
+# Development containers
+.devcontainer/cache/
+.devcontainer/vscode-server/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE specific
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/.ropeproject
+*.swp
+*.swo
+*~
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.csr
+certs/
+keys/
+
+# Configuration overrides
+config/local/
+local_config.py
+local_settings.py

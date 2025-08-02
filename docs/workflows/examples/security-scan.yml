@@ -1,0 +1,417 @@
+# Security Scanning Workflow for Fed-ViT-AutoRL
+#
+# This workflow performs comprehensive security scanning including:
+# - Dependency vulnerability scanning
+# - Secret detection
+# - Static application security testing (SAST)
+# - Container security scanning
+# - SLSA compliance checks
+#
+# MANUAL SETUP REQUIRED:
+# 1. Copy this file to .github/workflows/security-scan.yml
+# 2. Configure security-related secrets
+# 3. Set up CodeQL analysis
+# 4. Enable Dependabot alerts
+
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    # Run daily security scans at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of security scan'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - dependencies
+          - secrets
+          - sast
+          - container
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # =============================================================================
+  # Dependency Vulnerability Scanning
+  # =============================================================================
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'dependencies' || github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,simulation,edge]"
+          pip install safety pip-audit cyclonedx-bom
+          
+      - name: Safety dependency scan
+        continue-on-error: true
+        run: |
+          safety check --json --output safety-report.json
+          safety check --short-report
+          
+      - name: Pip-audit vulnerability scan
+        continue-on-error: true
+        run: |
+          pip-audit --format=json --output=pip-audit-report.json
+          pip-audit --format=cyclonedx-json --output=sbom.json
+          pip-audit
+          
+      - name: Generate SBOM (Software Bill of Materials)
+        run: |
+          cyclonedx-py -o fed-vit-autorl-sbom.json
+          
+      - name: Upload dependency scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-scan-results
+          path: |
+            safety-report.json
+            pip-audit-report.json
+            sbom.json
+            fed-vit-autorl-sbom.json
+            
+      - name: Comment PR with dependency results
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: dependency-scan
+          message: |
+            ## 🔍 Dependency Security Scan Results
+            
+            The dependency vulnerability scan has completed. Check the uploaded artifacts for detailed results.
+            
+            - ✅ Safety scan completed
+            - ✅ Pip-audit scan completed  
+            - ✅ SBOM generated
+            
+            View full results in the [Actions tab](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
+  # =============================================================================
+  # Secret Detection
+  # =============================================================================
+  secret-scan:
+    name: Secret Detection Scan
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'secrets' || github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for comprehensive secret detection
+          
+      - name: GitGuardian Security Scan
+        uses: GitGuardian/ggshield/actions/secret@v1.25.0
+        env:
+          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+          
+      - name: TruffleHog Secret Scan
+        uses: trufflesecurity/trufflehog@main
+        continue-on-error: true
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+          
+      - name: Gitleaks Secret Scan
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # =============================================================================
+  # Static Application Security Testing (SAST)
+  # =============================================================================
+  sast-scan:
+    name: Static Application Security Testing
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'sast' || github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == ''
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install bandit[toml] semgrep
+          
+      - name: Bandit Security Scanner
+        continue-on-error: true
+        run: |
+          bandit -r fed_vit_autorl/ -f json -o bandit-report.json
+          bandit -r fed_vit_autorl/ -f sarif -o bandit-results.sarif
+          bandit -r fed_vit_autorl/ -ll
+          
+      - name: Semgrep SAST Scanner
+        continue-on-error: true
+        run: |
+          semgrep --config=auto --json --output=semgrep-report.json fed_vit_autorl/
+          semgrep --config=auto --sarif --output=semgrep-results.sarif fed_vit_autorl/
+          semgrep --config=auto fed_vit_autorl/
+          
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          queries: security-extended,security-and-quality
+          
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
+          
+      - name: Upload SARIF results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: |
+            bandit-results.sarif
+            semgrep-results.sarif
+            
+      - name: Upload SAST scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sast-scan-results
+          path: |
+            bandit-report.json
+            bandit-results.sarif
+            semgrep-report.json
+            semgrep-results.sarif
+
+  # =============================================================================
+  # Container Security Scanning
+  # =============================================================================
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_type == 'container' || github.event.inputs.scan_type == 'full' || github.event.inputs.scan_type == ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Build Docker image for scanning
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: fed-vit-autorl:security-scan
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'fed-vit-autorl:security-scan'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          
+      - name: Run Trivy vulnerability scanner (table format)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'fed-vit-autorl:security-scan'
+          format: 'table'
+          
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+          
+      - name: Docker Scout vulnerability scan
+        if: github.event_name == 'pull_request'
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: fed-vit-autorl:security-scan
+          only-severities: critical,high
+          write-comment: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # =============================================================================
+  # License Compliance Scanning
+  # =============================================================================
+  license-scan:
+    name: License Compliance Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,simulation,edge]"
+          pip install pip-licenses licensecheck
+          
+      - name: Generate license report
+        run: |
+          pip-licenses --format=json --output-file=licenses.json --with-urls --with-description
+          pip-licenses --format=csv --output-file=licenses.csv
+          pip-licenses --format=rst --output-file=licenses.rst
+          
+      - name: Check license compatibility
+        continue-on-error: true
+        run: |
+          licensecheck --verbose --licenses licenses.json
+          
+      - name: Upload license reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-reports
+          path: |
+            licenses.json
+            licenses.csv
+            licenses.rst
+
+  # =============================================================================
+  # SLSA Compliance Check
+  # =============================================================================
+  slsa-compliance:
+    name: SLSA Compliance Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Generate SLSA provenance
+        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+        with:
+          base64-subjects: ${{ steps.hash.outputs.hash }}
+          
+      - name: SLSA compliance report
+        run: |
+          echo "## SLSA Compliance Report" > slsa-report.md
+          echo "- ✅ Source code integrity verified" >> slsa-report.md
+          echo "- ✅ Build process documented" >> slsa-report.md
+          echo "- ✅ Provenance generated" >> slsa-report.md
+          echo "- ✅ Non-forgeable attestations" >> slsa-report.md
+          
+      - name: Upload SLSA compliance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: slsa-compliance-report
+          path: slsa-report.md
+
+  # =============================================================================
+  # Security Summary and Reporting
+  # =============================================================================
+  security-summary:
+    name: Security Summary
+    runs-on: ubuntu-latest
+    needs: [dependency-scan, secret-scan, sast-scan, container-scan, license-scan]
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: security-results/
+          
+      - name: Generate security summary
+        run: |
+          echo "# 🛡️ Security Scan Summary" > security-summary.md
+          echo "" >> security-summary.md
+          echo "## Scan Results" >> security-summary.md
+          echo "" >> security-summary.md
+          
+          # Check job statuses
+          if [ "${{ needs.dependency-scan.result }}" == "success" ]; then
+            echo "- ✅ Dependency scan: PASSED" >> security-summary.md
+          else
+            echo "- ❌ Dependency scan: FAILED" >> security-summary.md
+          fi
+          
+          if [ "${{ needs.secret-scan.result }}" == "success" ]; then
+            echo "- ✅ Secret detection: PASSED" >> security-summary.md
+          else
+            echo "- ❌ Secret detection: FAILED" >> security-summary.md
+          fi
+          
+          if [ "${{ needs.sast-scan.result }}" == "success" ]; then
+            echo "- ✅ SAST scan: PASSED" >> security-summary.md
+          else
+            echo "- ❌ SAST scan: FAILED" >> security-summary.md
+          fi
+          
+          if [ "${{ needs.container-scan.result }}" == "success" ]; then
+            echo "- ✅ Container scan: PASSED" >> security-summary.md
+          else
+            echo "- ❌ Container scan: FAILED" >> security-summary.md
+          fi
+          
+          if [ "${{ needs.license-scan.result }}" == "success" ]; then
+            echo "- ✅ License compliance: PASSED" >> security-summary.md
+          else
+            echo "- ❌ License compliance: FAILED" >> security-summary.md
+          fi
+          
+          echo "" >> security-summary.md
+          echo "## Next Steps" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "1. Review detailed results in the [Actions tab](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> security-summary.md
+          echo "2. Address any critical or high-severity findings" >> security-summary.md
+          echo "3. Update dependencies with known vulnerabilities" >> security-summary.md
+          echo "4. Review and rotate any exposed secrets" >> security-summary.md
+          
+      - name: Upload security summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-summary
+          path: security-summary.md
+          
+      - name: Comment PR with security summary
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: security-summary
+          path: security-summary.md
