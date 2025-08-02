@@ -1,0 +1,45 @@
+# Fed-ViT-AutoRL Code Owners
+#
+# This file defines who has review permissions for different parts of the codebase.
+# Lines are checked sequentially, so put more specific patterns below general ones.
+
+# Global ownership - require review from core team
+* @danieleschmidt
+
+# Core federated learning components
+/fed_vit_autorl/federated/ @danieleschmidt @ml-team
+/fed_vit_autorl/models/ @danieleschmidt @ml-team
+/fed_vit_autorl/privacy/ @danieleschmidt @security-team
+
+# Edge deployment and optimization
+/fed_vit_autorl/edge/ @danieleschmidt @edge-team
+/scripts/deployment/ @danieleschmidt @devops-team
+
+# Infrastructure and DevOps
+/docker-compose.yml @danieleschmidt @devops-team
+/Dockerfile @danieleschmidt @devops-team
+/monitoring/ @danieleschmidt @devops-team
+/.github/workflows/ @danieleschmidt @devops-team
+
+# Security-sensitive areas
+/fed_vit_autorl/privacy/ @danieleschmidt @security-team
+/.github/workflows/security-scan.yml @danieleschmidt @security-team
+/monitoring/alert_rules.yml @danieleschmidt @security-team
+
+# Documentation
+/docs/ @danieleschmidt @docs-team
+/README.md @danieleschmidt @docs-team
+/CONTRIBUTING.md @danieleschmidt @docs-team
+
+# Testing infrastructure
+/tests/ @danieleschmidt @qa-team
+/.github/workflows/ci.yml @danieleschmidt @qa-team
+
+# Configuration files requiring special attention
+/pyproject.toml @danieleschmidt
+/.pre-commit-config.yaml @danieleschmidt
+/.github/dependabot.yml @danieleschmidt @security-team
+
+# Scripts requiring elevated permissions
+/scripts/automation/ @danieleschmidt @devops-team
+/scripts/deployment/ @danieleschmidt @devops-team
