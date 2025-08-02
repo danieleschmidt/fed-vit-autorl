@@ -102,17 +102,45 @@ docs-clean: ## Clean documentation build
 	cd docs && make clean
 
 # Docker
-docker-build: ## Build Docker image
-	docker build -t fed-vit-autorl:latest .
+docker-build: ## Build all Docker images
+	docker build --target prod -t fed-vit-autorl:prod .
+	docker build --target dev -t fed-vit-autorl:dev .
+	docker build --target edge -t fed-vit-autorl:edge .
+	docker build --target simulation -t fed-vit-autorl:simulation .
+
+docker-build-prod: ## Build production Docker image
+	docker build --target prod -t fed-vit-autorl:prod .
 
 docker-build-dev: ## Build development Docker image
-	docker build -f Dockerfile.dev -t fed-vit-autorl:dev .
+	docker build --target dev -t fed-vit-autorl:dev .
 
-docker-run: ## Run Docker container
-	docker run -it --rm --gpus all -v $(PWD):/workspace fed-vit-autorl:latest
+docker-build-edge: ## Build edge Docker image
+	docker build --target edge -t fed-vit-autorl:edge .
+
+docker-build-simulation: ## Build simulation Docker image
+	docker build --target simulation -t fed-vit-autorl:simulation .
+
+docker-run: ## Run production Docker container
+	docker run -it --rm --gpus all -v $(PWD):/app fed-vit-autorl:prod
 
 docker-run-dev: ## Run development Docker container
-	docker run -it --rm --gpus all -v $(PWD):/workspace -p 8888:8888 -p 6006:6006 fed-vit-autorl:dev
+	docker run -it --rm --gpus all -v $(PWD):/app -p 8888:8888 -p 6006:6006 fed-vit-autorl:dev
+
+docker-dev: ## Start development environment with docker-compose
+	docker-compose up -d fed-dev postgres redis
+
+docker-up: ## Start full federated system
+	docker-compose up -d
+
+docker-down: ## Stop all containers
+	docker-compose down
+
+docker-logs: ## View container logs
+	docker-compose logs -f
+
+docker-clean: ## Remove all containers and images
+	docker-compose down -v --rmi all
+	docker system prune -f
 
 # Simulation
 carla-setup: ## Set up CARLA simulator

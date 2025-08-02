@@ -1,0 +1,212 @@
+version: '3.8'
+
+services:
+  # Federated Learning Server
+  fed-server:
+    build:
+      context: .
+      target: prod
+    container_name: fed-vit-server
+    ports:
+      - "8000:8000"
+      - "6006:6006"  # TensorBoard
+    environment:
+      - LOG_LEVEL=INFO
+      - FED_VIT_AUTORL_ENV=production
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models
+    networks:
+      - fed-vit-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Development Environment
+  fed-dev:
+    build:
+      context: .
+      target: dev
+    container_name: fed-vit-dev
+    ports:
+      - "8001:8000"
+      - "8888:8888"  # Jupyter Lab
+      - "6007:6006"  # TensorBoard
+    environment:
+      - LOG_LEVEL=DEBUG
+      - FED_VIT_AUTORL_ENV=development
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - fed-vit-cache:/home/fedvit/.cache
+    networks:
+      - fed-vit-network
+    command: ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+    tty: true
+    stdin_open: true
+
+  # Edge Deployment Simulator
+  fed-edge-1:
+    build:
+      context: .
+      target: edge
+    container_name: fed-vit-edge-1
+    ports:
+      - "8081:8080"
+    environment:
+      - EDGE_DEVICE_ID=edge-001
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./models:/app/models:ro
+      - edge-1-data:/app/data
+    networks:
+      - fed-vit-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+
+  fed-edge-2:
+    build:
+      context: .
+      target: edge
+    container_name: fed-vit-edge-2
+    ports:
+      - "8082:8080"
+    environment:
+      - EDGE_DEVICE_ID=edge-002
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./models:/app/models:ro
+      - edge-2-data:/app/data
+    networks:
+      - fed-vit-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+
+  # Simulation Environment
+  fed-simulation:
+    build:
+      context: .
+      target: simulation
+    container_name: fed-vit-simulation
+    ports:
+      - "8003:8000"
+      - "2000-2002:2000-2002"  # CARLA ports
+    environment:
+      - LOG_LEVEL=INFO
+      - DISPLAY=:1.0
+      - CARLA_ROOT=/opt/carla-simulator
+    volumes:
+      - ./data:/app/data
+      - ./experiments:/app/experiments
+      - simulation-cache:/home/fedvit/.cache
+    networks:
+      - fed-vit-network
+    shm_size: 2g
+    # Uncomment for GPU support
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: fed-vit-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - fed-vit-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: fed-vit-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=fedvit123
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana-dashboards:/etc/grafana/provisioning/dashboards
+    networks:
+      - fed-vit-network
+
+  # Database for experiment tracking
+  postgres:
+    image: postgres:15-alpine
+    container_name: fed-vit-postgres
+    environment:
+      - POSTGRES_DB=fedvit
+      - POSTGRES_USER=fedvit
+      - POSTGRES_PASSWORD=fedvit123
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - fed-vit-network
+    restart: unless-stopped
+
+  # Redis for caching and message passing
+  redis:
+    image: redis:7-alpine
+    container_name: fed-vit-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - fed-vit-network
+    restart: unless-stopped
+
+  # MinIO for object storage (model artifacts, datasets)
+  minio:
+    image: minio/minio:latest
+    container_name: fed-vit-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=fedvit
+      - MINIO_ROOT_PASSWORD=fedvit123
+    volumes:
+      - minio-data:/data
+    networks:
+      - fed-vit-network
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+networks:
+  fed-vit-network:
+    driver: bridge
+
+volumes:
+  fed-vit-cache:
+  simulation-cache:
+  edge-1-data:
+  edge-2-data:
+  prometheus-data:
+  grafana-data:
+  postgres-data:
+  redis-data:
+  minio-data:

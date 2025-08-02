@@ -1,0 +1,120 @@
+# Git
+.git
+.gitignore
+README.md
+CHANGELOG.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Development
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Data and models (keep only configs)
+data/
+!data/.gitkeep
+models/
+!models/.gitkeep
+logs/
+!logs/.gitkeep
+experiments/
+!experiments/.gitkeep
+checkpoints/
+outputs/
+wandb/
+
+# Documentation
+docs/_build/
+docs/.doctrees/
+*.epub
+*.pdf
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# Monitoring
+monitoring/data/
+*.pem
+*.crt
+*.key
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.iso
+*.dmg
+
+# Secrets
+secrets/
+*.secret
+*.pem
+*.p12
+*.pfx
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+node_modules/
