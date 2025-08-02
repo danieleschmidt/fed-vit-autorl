@@ -1,0 +1,160 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Fed-ViT-AutoRL Overview",
+    "tags": ["fed-vit", "overview"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Health",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up",
+            "legendFormat": "{{job}} - {{instance}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "options": {
+                  "0": {"text": "DOWN", "color": "red"},
+                  "1": {"text": "UP", "color": "green"}
+                },
+                "type": "value"
+              }
+            ],
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Active Clients",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "fed_vit_autorl_active_clients",
+            "legendFormat": "Active Clients"
+          }
+        ],
+        "yAxes": [
+          {"label": "Clients", "min": 0},
+          {"show": false}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Training Progress",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "fed_vit_autorl_training_rounds_total",
+            "legendFormat": "Training Rounds"
+          },
+          {
+            "expr": "fed_vit_autorl_training_loss",
+            "legendFormat": "Training Loss"
+          }
+        ],
+        "yAxes": [
+          {"label": "Rounds", "min": 0},
+          {"label": "Loss", "min": 0}
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Request Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, fed_vit_autorl_request_duration_seconds_bucket)",
+            "legendFormat": "50th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.95, fed_vit_autorl_request_duration_seconds_bucket)",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.99, fed_vit_autorl_request_duration_seconds_bucket)",
+            "legendFormat": "99th percentile"
+          }
+        ],
+        "yAxes": [
+          {"label": "Seconds", "min": 0},
+          {"show": false}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(fed_vit_autorl_requests_total{status!~\"2..\"}[5m])",
+            "legendFormat": "Error Rate"
+          }
+        ],
+        "yAxes": [
+          {"label": "Errors/sec", "min": 0},
+          {"show": false}
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Edge Device Status",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "fed_vit_autorl_edge_device_info",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true, "__name__": true},
+              "indexByName": {},
+              "renameByName": {
+                "instance": "Device",
+                "device_type": "Type",
+                "battery_level": "Battery %",
+                "temperature": "Temp °C"
+              }
+            }
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    },
+    "refresh": "30s",
+    "schemaVersion": 30,
+    "version": 1,
+    "links": []
+  }
+}

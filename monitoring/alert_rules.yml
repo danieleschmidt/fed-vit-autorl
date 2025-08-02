@@ -1,0 +1,190 @@
+groups:
+  - name: fed_vit_autorl_alerts
+    rules:
+      # High-level System Health
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Service {{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute."
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 90% for more than 5 minutes on {{ $labels.instance }}."
+
+      - alert: HighCPUUsage
+        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 85% for more than 10 minutes on {{ $labels.instance }}."
+
+      # Federated Learning Specific
+      - alert: FedServerHighLatency
+        expr: fed_vit_autorl_request_duration_seconds{quantile="0.95"} > 5
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency on federated server"
+          description: "95th percentile latency is {{ $value }}s, above 5s threshold."
+
+      - alert: LowClientParticipation
+        expr: fed_vit_autorl_active_clients < 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low client participation in federated learning"
+          description: "Only {{ $value }} clients are active, below threshold of 50."
+
+      - alert: ModelConvergenceStalled
+        expr: increase(fed_vit_autorl_training_rounds_total[1h]) < 5
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model training convergence appears stalled"
+          description: "Only {{ $value }} training rounds completed in the last hour."
+
+      - alert: HighTrainingLoss
+        expr: fed_vit_autorl_training_loss > 2.0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Training loss is unexpectedly high"
+          description: "Training loss {{ $value }} is above expected threshold of 2.0."
+
+      # Edge Device Monitoring
+      - alert: EdgeDeviceOffline
+        expr: up{job="fed-edge"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Edge device offline"
+          description: "Edge device {{ $labels.instance }} has been offline for more than 2 minutes."
+
+      - alert: EdgeHighInferenceLatency
+        expr: fed_vit_autorl_inference_duration_seconds{quantile="0.95"} > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High inference latency on edge device"
+          description: "95th percentile inference latency is {{ $value }}s, above 100ms threshold on {{ $labels.instance }}."
+
+      - alert: EdgeLowBattery
+        expr: fed_vit_autorl_edge_battery_level < 20
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low battery on edge device"
+          description: "Battery level is {{ $value }}% on edge device {{ $labels.instance }}."
+
+      # Privacy and Security
+      - alert: PrivacyBudgetExhausted
+        expr: fed_vit_autorl_privacy_epsilon_remaining < 0.1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Privacy budget nearly exhausted"
+          description: "Privacy epsilon remaining is {{ $value }}, below critical threshold."
+
+      - alert: UnauthorizedAccess
+        expr: increase(fed_vit_autorl_unauthorized_requests_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Multiple unauthorized access attempts detected"
+          description: "{{ $value }} unauthorized requests in the last 5 minutes."
+
+      # Data Quality
+      - alert: LowDataQuality
+        expr: fed_vit_autorl_data_quality_score < 0.7
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low data quality detected"
+          description: "Data quality score is {{ $value }}, below threshold of 0.7."
+
+      - alert: DataDrift
+        expr: fed_vit_autorl_data_drift_score > 0.5
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Data drift detected"
+          description: "Data drift score is {{ $value }}, above threshold of 0.5."
+
+      # Communication and Network
+      - alert: HighPacketLoss
+        expr: fed_vit_autorl_packet_loss_rate > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High packet loss in federated communication"
+          description: "Packet loss rate is {{ $value }}, above 5% threshold."
+
+      - alert: NetworkPartition
+        expr: fed_vit_autorl_connected_clients / fed_vit_autorl_total_clients < 0.5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Network partition detected"
+          description: "Only {{ $value }}% of clients are connected, indicating possible network partition."
+
+      # Storage and Persistence
+      - alert: LowDiskSpace
+        expr: (1 - (node_filesystem_free_bytes / node_filesystem_size_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }} {{ $labels.mountpoint }}."
+
+      - alert: ModelStorageFailure
+        expr: increase(fed_vit_autorl_model_save_failures_total[10m]) > 3
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Multiple model storage failures"
+          description: "{{ $value }} model save failures in the last 10 minutes."
+
+      # Performance Degradation
+      - alert: ThroughputDrop
+        expr: (rate(fed_vit_autorl_requests_total[5m]) / rate(fed_vit_autorl_requests_total[1h] offset 1h)) < 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Significant throughput drop detected"
+          description: "Current throughput is less than 50% of the average from 1 hour ago."
+
+      - alert: AccuracyDegradation
+        expr: fed_vit_autorl_model_accuracy < 0.85
+        for: 20m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model accuracy degradation"
+          description: "Model accuracy has dropped to {{ $value }}, below 85% threshold."

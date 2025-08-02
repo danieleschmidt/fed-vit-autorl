@@ -1,0 +1,78 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Federated Learning Server
+  - job_name: 'fed-server'
+    static_configs:
+      - targets: ['fed-server:8000']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    params:
+      format: ['prometheus']
+
+  # Edge Devices
+  - job_name: 'fed-edge'
+    static_configs:
+      - targets: 
+        - 'fed-edge-1:8080'
+        - 'fed-edge-2:8080'
+    metrics_path: /metrics
+    scrape_interval: 30s
+    params:
+      format: ['prometheus']
+
+  # Development Environment
+  - job_name: 'fed-dev'
+    static_configs:
+      - targets: ['fed-dev:8000']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Simulation Environment
+  - job_name: 'fed-simulation'
+    static_configs:
+      - targets: ['fed-simulation:8000']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+  # Infrastructure Services
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: /metrics
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: /metrics
+
+  - job_name: 'minio'
+    static_configs:
+      - targets: ['minio:9000']
+    metrics_path: /minio/v2/metrics/cluster
+
+  # Node Exporter (if running on host)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+
+  # Docker metrics
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['host.docker.internal:9323']
