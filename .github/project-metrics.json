@@ -1,0 +1,193 @@
+{
+  "project": {
+    "name": "Fed-ViT-AutoRL",
+    "version": "1.0.0",
+    "description": "Federated reinforcement learning framework for Vision Transformer based autonomous vehicles",
+    "repository": "danieleschmidt/fed-vit-autorl",
+    "license": "MIT",
+    "language": "Python",
+    "framework": "PyTorch"
+  },
+  "metrics": {
+    "code_quality": {
+      "lines_of_code": {
+        "total": 0,
+        "source": 0,
+        "tests": 0,
+        "docs": 0
+      },
+      "test_coverage": {
+        "target": 90,
+        "current": 0,
+        "unit_tests": 0,
+        "integration_tests": 0,
+        "e2e_tests": 0
+      },
+      "code_complexity": {
+        "cyclomatic_complexity": 0,
+        "maintainability_index": 0,
+        "technical_debt_ratio": 0
+      },
+      "static_analysis": {
+        "security_hotspots": 0,
+        "bugs": 0,
+        "vulnerabilities": 0,
+        "code_smells": 0
+      }
+    },
+    "development": {
+      "commits": {
+        "total": 0,
+        "last_30_days": 0,
+        "contributors": 0
+      },
+      "pull_requests": {
+        "total": 0,
+        "open": 0,
+        "merged": 0,
+        "average_review_time_hours": 0
+      },
+      "issues": {
+        "total": 0,
+        "open": 0,
+        "closed": 0,
+        "average_resolution_time_days": 0
+      },
+      "releases": {
+        "total": 0,
+        "last_release_date": null,
+        "release_frequency_days": 0
+      }
+    },
+    "performance": {
+      "build_times": {
+        "average_seconds": 0,
+        "p95_seconds": 0,
+        "success_rate": 0
+      },
+      "test_execution": {
+        "unit_tests_seconds": 0,
+        "integration_tests_seconds": 0,
+        "e2e_tests_seconds": 0,
+        "total_test_time_seconds": 0
+      },
+      "deployment": {
+        "average_deployment_time_minutes": 0,
+        "deployment_success_rate": 0,
+        "rollback_rate": 0
+      }
+    },
+    "federated_learning": {
+      "model_performance": {
+        "global_accuracy": 0,
+        "convergence_rounds": 0,
+        "communication_efficiency": 0,
+        "privacy_budget_utilization": 0
+      },
+      "system_scalability": {
+        "max_clients_supported": 1000,
+        "current_active_clients": 0,
+        "throughput_rounds_per_hour": 0,
+        "latency_p95_ms": 100
+      },
+      "edge_deployment": {
+        "supported_devices": ["jetson_xavier", "jetson_nano", "raspberry_pi"],
+        "inference_latency_ms": 50,
+        "model_size_mb": 100,
+        "energy_efficiency_mj_per_inference": 1.0
+      }
+    },
+    "security": {
+      "vulnerability_scan": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "last_scan_date": null
+      },
+      "dependency_security": {
+        "outdated_dependencies": 0,
+        "vulnerable_dependencies": 0,
+        "license_compliance": true
+      },
+      "privacy_compliance": {
+        "differential_privacy_enabled": true,
+        "epsilon_value": 1.0,
+        "delta_value": 1e-5,
+        "gdpr_compliant": true
+      }
+    },
+    "community": {
+      "github_stats": {
+        "stars": 0,
+        "forks": 0,
+        "watchers": 0,
+        "contributors": 0
+      },
+      "downloads": {
+        "pypi_downloads_last_month": 0,
+        "docker_pulls": 0,
+        "documentation_views": 0
+      },
+      "engagement": {
+        "discussions": 0,
+        "community_contributions": 0,
+        "external_citations": 0
+      }
+    },
+    "operational": {
+      "uptime": {
+        "target_percentage": 99.9,
+        "current_percentage": 0,
+        "mttr_hours": 0,
+        "mtbf_hours": 0
+      },
+      "monitoring": {
+        "alerts_last_24h": 0,
+        "false_positive_rate": 0,
+        "monitoring_coverage": 0
+      },
+      "costs": {
+        "infrastructure_monthly_usd": 0,
+        "ci_cd_monthly_usd": 0,
+        "monitoring_monthly_usd": 0
+      }
+    }
+  },
+  "goals": {
+    "code_quality": {
+      "test_coverage_target": 90,
+      "security_vulnerabilities_target": 0,
+      "code_duplication_target": 5
+    },
+    "performance": {
+      "build_time_target_seconds": 300,
+      "test_execution_target_seconds": 180,
+      "deployment_time_target_minutes": 15
+    },
+    "federated_learning": {
+      "accuracy_target": 0.95,
+      "convergence_rounds_target": 100,
+      "client_scalability_target": 10000,
+      "inference_latency_target_ms": 50
+    },
+    "community": {
+      "github_stars_target": 1000,
+      "contributors_target": 50,
+      "pypi_downloads_target": 10000
+    }
+  },
+  "tracking": {
+    "last_updated": null,
+    "update_frequency": "daily",
+    "data_sources": [
+      "github_api",
+      "prometheus",
+      "pypi_api",
+      "docker_hub_api",
+      "sonarcloud_api",
+      "codecov_api"
+    ],
+    "automated_collection": true
+  }
+}
