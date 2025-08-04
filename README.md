@@ -775,7 +775,7 @@ for issue in perception_issues:
 ```bibtex
 @article{fed_vit_autorl,
   title={Fed-ViT-AutoRL: Federated Vision Transformers for Autonomous Driving},
-  author={Your Name},
+  author={Daniel Schmidt},
   journal={IEEE Transactions on Intelligent Vehicles},
   year={2025},
   doi={10.1109/TIV.2025.xxxxx}
