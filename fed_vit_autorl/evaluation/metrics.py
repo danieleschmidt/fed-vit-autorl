@@ -570,3 +570,371 @@ class FederationMetrics:
         gini = (n + 1 - 2 * np.sum(cumsum) / cumsum[-1]) / n
         
         return max(0.0, min(1.0, gini))
+
+
+class LatencyMetrics:
+    """Metrics for real-time performance evaluation."""
+    
+    def __init__(self):
+        """Initialize latency metrics."""
+        self.inference_times = []
+        self.communication_times = []
+        self.memory_usage = []
+        self.gpu_utilization = []
+        
+    def record_inference_time(self, start_time: float, end_time: float) -> None:
+        """Record inference time measurement."""
+        self.inference_times.append(end_time - start_time)
+    
+    def record_communication_time(self, start_time: float, end_time: float) -> None:
+        """Record communication time measurement."""
+        self.communication_times.append(end_time - start_time)
+    
+    def record_memory_usage(self, memory_mb: float) -> None:
+        """Record memory usage measurement."""
+        self.memory_usage.append(memory_mb)
+    
+    def record_gpu_utilization(self, utilization_percent: float) -> None:
+        """Record GPU utilization measurement."""
+        self.gpu_utilization.append(utilization_percent)
+    
+    def compute_latency_metrics(self) -> Dict[str, float]:
+        """Compute comprehensive latency metrics."""
+        metrics = {}
+        
+        if self.inference_times:
+            inference_ms = [t * 1000 for t in self.inference_times]
+            metrics.update({
+                'avg_inference_latency_ms': np.mean(inference_ms),
+                'p50_inference_latency_ms': np.percentile(inference_ms, 50),
+                'p95_inference_latency_ms': np.percentile(inference_ms, 95),
+                'p99_inference_latency_ms': np.percentile(inference_ms, 99),
+                'max_inference_latency_ms': np.max(inference_ms),
+                'inference_jitter_ms': np.std(inference_ms),
+                'realtime_compliance': np.mean(np.array(inference_ms) <= 50),  # 50ms threshold
+            })
+        
+        if self.communication_times:
+            comm_ms = [t * 1000 for t in self.communication_times]
+            metrics.update({
+                'avg_communication_latency_ms': np.mean(comm_ms),
+                'p95_communication_latency_ms': np.percentile(comm_ms, 95),
+                'max_communication_latency_ms': np.max(comm_ms),
+            })
+        
+        if self.memory_usage:
+            metrics.update({
+                'avg_memory_usage_mb': np.mean(self.memory_usage),
+                'max_memory_usage_mb': np.max(self.memory_usage),
+                'memory_efficiency': 1.0 / (np.mean(self.memory_usage) / 1024),  # Normalized
+            })
+        
+        if self.gpu_utilization:
+            metrics.update({
+                'avg_gpu_utilization': np.mean(self.gpu_utilization),
+                'min_gpu_utilization': np.min(self.gpu_utilization),
+                'gpu_efficiency': np.mean(self.gpu_utilization) / 100.0,
+            })
+        
+        return metrics
+    
+    def clear_metrics(self) -> None:
+        """Clear all recorded metrics."""
+        self.inference_times.clear()
+        self.communication_times.clear()
+        self.memory_usage.clear()
+        self.gpu_utilization.clear()
+
+
+class PrivacyMetrics:
+    """Metrics for privacy preservation evaluation."""
+    
+    def __init__(self):
+        """Initialize privacy metrics."""
+        self.epsilon_values = []
+        self.delta_values = []
+        self.noise_levels = []
+        
+    def record_privacy_budget(self, epsilon: float, delta: float) -> None:
+        """Record privacy budget consumption."""
+        self.epsilon_values.append(epsilon)
+        self.delta_values.append(delta)
+    
+    def record_noise_level(self, noise_std: float) -> None:
+        """Record differential privacy noise level."""
+        self.noise_levels.append(noise_std)
+    
+    def compute_privacy_metrics(self) -> Dict[str, float]:
+        """Compute privacy preservation metrics."""
+        metrics = {}
+        
+        if self.epsilon_values:
+            metrics.update({
+                'total_epsilon': np.sum(self.epsilon_values),
+                'avg_epsilon_per_round': np.mean(self.epsilon_values),
+                'privacy_budget_remaining': max(0, 1.0 - np.sum(self.epsilon_values)),
+            })
+        
+        if self.delta_values:
+            metrics.update({
+                'total_delta': np.sum(self.delta_values),
+                'max_delta': np.max(self.delta_values),
+            })
+        
+        if self.noise_levels:
+            metrics.update({
+                'avg_noise_level': np.mean(self.noise_levels),
+                'noise_consistency': 1.0 / (1.0 + np.var(self.noise_levels)),
+            })
+        
+        # Privacy-utility tradeoff score
+        if self.epsilon_values:
+            privacy_score = 1.0 / (1.0 + np.sum(self.epsilon_values))
+            metrics['privacy_utility_score'] = privacy_score
+        
+        return metrics
+
+
+class RobustnessMetrics:
+    """Metrics for model robustness evaluation."""
+    
+    def __init__(self):
+        """Initialize robustness metrics."""
+        self.adversarial_accuracies = []
+        self.noise_robustness = []
+        self.weather_robustness = []
+        
+    def evaluate_adversarial_robustness(
+        self,
+        model: nn.Module,
+        clean_data: torch.Tensor,
+        adversarial_data: torch.Tensor,
+        labels: torch.Tensor,
+    ) -> Dict[str, float]:
+        """Evaluate model robustness against adversarial attacks."""
+        model.eval()
+        
+        with torch.no_grad():
+            # Clean accuracy
+            clean_predictions = model(clean_data)
+            clean_accuracy = (clean_predictions.argmax(dim=1) == labels).float().mean().item()
+            
+            # Adversarial accuracy
+            adv_predictions = model(adversarial_data)
+            adv_accuracy = (adv_predictions.argmax(dim=1) == labels).float().mean().item()
+        
+        self.adversarial_accuracies.append(adv_accuracy)
+        
+        return {
+            'clean_accuracy': clean_accuracy,
+            'adversarial_accuracy': adv_accuracy,
+            'robustness_score': adv_accuracy / (clean_accuracy + 1e-6),
+        }
+    
+    def evaluate_noise_robustness(
+        self,
+        model: nn.Module,
+        data: torch.Tensor,
+        labels: torch.Tensor,
+        noise_levels: List[float],
+    ) -> Dict[str, float]:
+        """Evaluate robustness against Gaussian noise."""
+        model.eval()
+        noise_accuracies = []
+        
+        with torch.no_grad():
+            for noise_std in noise_levels:
+                noisy_data = data + torch.randn_like(data) * noise_std
+                predictions = model(noisy_data)
+                accuracy = (predictions.argmax(dim=1) == labels).float().mean().item()
+                noise_accuracies.append(accuracy)
+        
+        self.noise_robustness.extend(noise_accuracies)
+        
+        return {
+            'noise_robustness_scores': noise_accuracies,
+            'avg_noise_robustness': np.mean(noise_accuracies),
+            'noise_degradation': 1.0 - np.mean(noise_accuracies),
+        }
+    
+    def evaluate_weather_robustness(
+        self,
+        model: nn.Module,
+        data: torch.Tensor,
+        labels: torch.Tensor,
+        weather_conditions: List[str],
+    ) -> Dict[str, float]:
+        """Evaluate robustness across different weather conditions."""
+        model.eval()
+        weather_accuracies = {}
+        
+        with torch.no_grad():
+            for condition in weather_conditions:
+                # Apply weather-specific transformations
+                weather_data = self._apply_weather_transform(data, condition)
+                predictions = model(weather_data)
+                accuracy = (predictions.argmax(dim=1) == labels).float().mean().item()
+                weather_accuracies[condition] = accuracy
+        
+        self.weather_robustness.append(weather_accuracies)
+        
+        return {
+            'weather_accuracies': weather_accuracies,
+            'avg_weather_robustness': np.mean(list(weather_accuracies.values())),
+            'worst_weather_accuracy': min(weather_accuracies.values()),
+        }
+    
+    def _apply_weather_transform(self, data: torch.Tensor, condition: str) -> torch.Tensor:
+        """Apply weather-specific image transformations."""
+        # Simplified weather simulation
+        if condition == 'rain':
+            # Add noise and reduce brightness
+            return data * 0.7 + torch.randn_like(data) * 0.1
+        elif condition == 'fog':
+            # Reduce contrast
+            return data * 0.5 + 0.5
+        elif condition == 'night':
+            # Reduce brightness significantly
+            return data * 0.3
+        else:  # clear
+            return data
+    
+    def compute_robustness_metrics(self) -> Dict[str, float]:
+        """Compute comprehensive robustness metrics."""
+        metrics = {}
+        
+        if self.adversarial_accuracies:
+            metrics.update({
+                'avg_adversarial_accuracy': np.mean(self.adversarial_accuracies),
+                'min_adversarial_accuracy': np.min(self.adversarial_accuracies),
+            })
+        
+        if self.noise_robustness:
+            metrics.update({
+                'avg_noise_robustness': np.mean(self.noise_robustness),
+                'noise_robustness_std': np.std(self.noise_robustness),
+            })
+        
+        if self.weather_robustness:
+            all_weather_scores = []
+            for weather_dict in self.weather_robustness:
+                all_weather_scores.extend(weather_dict.values())
+            
+            metrics.update({
+                'avg_weather_robustness': np.mean(all_weather_scores),
+                'weather_robustness_std': np.std(all_weather_scores),
+            })
+        
+        return metrics
+
+
+class ComprehensiveEvaluator:
+    """Comprehensive evaluator combining all metrics."""
+    
+    def __init__(self, num_classes: int = 20):
+        """Initialize comprehensive evaluator."""
+        self.perception_metrics = PerceptionMetrics(num_classes)
+        self.driving_metrics = DrivingMetrics()
+        self.federation_metrics = FederationMetrics()
+        self.latency_metrics = LatencyMetrics()
+        self.privacy_metrics = PrivacyMetrics()
+        self.robustness_metrics = RobustnessMetrics()
+        
+    def evaluate_all(
+        self,
+        model: nn.Module,
+        test_data: Dict[str, Any],
+        federation_data: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Dict[str, float]]:
+        """Perform comprehensive evaluation across all metrics."""
+        results = {}
+        
+        # Perception evaluation
+        if 'detection' in test_data:
+            detection_metrics = self.perception_metrics.compute_detection_metrics(
+                test_data['detection']['predictions'],
+                test_data['detection']['targets']
+            )
+            results['perception'] = detection_metrics
+        
+        if 'segmentation' in test_data:
+            seg_metrics = self.perception_metrics.compute_segmentation_metrics(
+                test_data['segmentation']['predictions'],
+                test_data['segmentation']['targets']
+            )
+            results['segmentation'] = seg_metrics
+        
+        # Driving behavior evaluation
+        if 'trajectories' in test_data:
+            safety_metrics = self.driving_metrics.compute_safety_metrics(
+                test_data['trajectories']
+            )
+            comfort_metrics = self.driving_metrics.compute_comfort_metrics(
+                test_data['trajectories']
+            )
+            results['safety'] = safety_metrics
+            results['comfort'] = comfort_metrics
+        
+        # Federation evaluation
+        if federation_data:
+            if 'loss_history' in federation_data:
+                convergence_metrics = self.federation_metrics.compute_convergence_metrics(
+                    federation_data['loss_history'],
+                    federation_data.get('accuracy_history', [])
+                )
+                results['convergence'] = convergence_metrics
+            
+            if 'client_accuracies' in federation_data:
+                fairness_metrics = self.federation_metrics.compute_fairness_metrics(
+                    federation_data['client_accuracies'],
+                    federation_data.get('client_data_sizes', {})
+                )
+                results['fairness'] = fairness_metrics
+        
+        # Performance metrics
+        latency_results = self.latency_metrics.compute_latency_metrics()
+        if latency_results:
+            results['latency'] = latency_results
+        
+        # Privacy metrics
+        privacy_results = self.privacy_metrics.compute_privacy_metrics()
+        if privacy_results:
+            results['privacy'] = privacy_results
+        
+        # Robustness metrics
+        robustness_results = self.robustness_metrics.compute_robustness_metrics()
+        if robustness_results:
+            results['robustness'] = robustness_results
+        
+        return results
+    
+    def generate_report(self, results: Dict[str, Dict[str, float]]) -> str:
+        """Generate a comprehensive evaluation report."""
+        report = ["\n=== Fed-ViT-AutoRL Evaluation Report ==="]
+        
+        for category, metrics in results.items():
+            report.append(f"\n--- {category.upper()} METRICS ---")
+            for metric_name, value in metrics.items():
+                if isinstance(value, float):
+                    report.append(f"{metric_name}: {value:.4f}")
+                else:
+                    report.append(f"{metric_name}: {value}")
+        
+        # Overall score calculation
+        overall_scores = []
+        if 'perception' in results:
+            overall_scores.append(results['perception'].get('mAP', 0.0))
+        if 'safety' in results:
+            # Invert collision rate for scoring (lower is better)
+            collision_score = 1.0 / (1.0 + results['safety'].get('collision_rate', 1.0))
+            overall_scores.append(collision_score)
+        if 'latency' in results:
+            realtime_score = results['latency'].get('realtime_compliance', 0.0)
+            overall_scores.append(realtime_score)
+        
+        if overall_scores:
+            overall_score = np.mean(overall_scores)
+            report.append(f"\n--- OVERALL SCORE ---")
+            report.append(f"Composite Score: {overall_score:.4f}")
+        
+        return "\n".join(report)

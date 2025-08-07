@@ -1,0 +1,259 @@
+# Fed-ViT-AutoRL Production Configuration
+
+# Server Configuration
+server:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  max_connections: 1000
+  timeout: 30
+  ssl_enabled: true
+  ssl_cert_path: "/app/certs/server.crt"
+  ssl_key_path: "/app/certs/server.key"
+
+# Federated Learning Configuration
+federation:
+  max_clients: 1000
+  min_clients_per_round: 50
+  max_rounds: 10000
+  client_selection_strategy: "random"
+  aggregation_algorithm: "fedavg"
+  
+  # Client management
+  client_timeout: 300  # seconds
+  heartbeat_interval: 60
+  max_client_failures: 3
+  
+  # Model synchronization
+  model_sync_frequency: 10  # rounds
+  checkpoint_frequency: 50
+  
+  # Resource management
+  max_memory_per_client: "2GB"
+  max_cpu_per_client: 2
+
+# Model Configuration
+model:
+  architecture: "vit_base"
+  input_size: 384
+  patch_size: 16
+  embed_dim: 768
+  depth: 12
+  num_heads: 12
+  num_classes: 20
+  pretrained: true
+  
+  # Optimization
+  optimization_level: 2
+  quantization_enabled: true
+  pruning_enabled: true
+  sparsity_ratio: 0.3
+
+# Training Configuration
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  optimizer: "adamw"
+  weight_decay: 0.01
+  scheduler: "cosine"
+  warmup_epochs: 10
+  max_epochs: 1000
+  
+  # Distributed training
+  distributed_backend: "nccl"
+  gradient_clipping: 1.0
+  mixed_precision: true
+  
+  # Regularization
+  dropout: 0.1
+  label_smoothing: 0.1
+
+# Privacy Configuration
+privacy:
+  mechanism: "differential_privacy"
+  epsilon: 1.0
+  delta: 1e-5
+  clip_norm: 1.0
+  noise_multiplier: 1.1
+  secure_aggregation: true
+  
+  # Advanced privacy
+  local_dp: true
+  private_inference: false
+  homomorphic_encryption: false
+
+# Communication Configuration
+communication:
+  compression_enabled: true
+  compression_ratio: 0.01
+  error_feedback: true
+  async_enabled: true
+  max_bandwidth_mbps: 100
+  
+  # Security
+  encryption_enabled: true
+  authentication_required: true
+  rate_limiting: true
+  max_requests_per_minute: 1000
+
+# Safety Configuration
+safety:
+  enabled: true
+  max_speed_kmh: 50
+  min_following_distance: 2.0
+  emergency_brake_threshold: 1.5
+  lateral_acceleration_limit: 3.0
+  model_confidence_threshold: 0.8
+  failsafe_enabled: true
+  
+  # Monitoring
+  anomaly_detection: true
+  performance_monitoring: true
+  safety_event_logging: true
+
+# Performance Configuration
+performance:
+  target_latency_ms: 50
+  target_memory_mb: 512
+  gpu_memory_fraction: 0.8
+  cpu_threads: 4
+  
+  # Caching
+  model_cache_size: 10
+  data_cache_size_gb: 5
+  result_cache_ttl: 3600
+  
+  # Profiling
+  profiling_enabled: false
+  metrics_collection: true
+  detailed_logging: false
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  metrics_port: 9090
+  health_check_interval: 30
+  log_level: "INFO"
+  
+  # Prometheus metrics
+  prometheus_enabled: true
+  custom_metrics: true
+  
+  # Alerts
+  alerting_enabled: true
+  email_notifications: false
+  slack_notifications: false
+
+# Storage Configuration
+storage:
+  backend: "filesystem"  # or "s3", "gcs"
+  base_path: "/app/storage"
+  
+  # Database
+  database_url: "postgresql://fedvit:password@postgres:5432/fedvit"
+  connection_pool_size: 20
+  
+  # Model storage
+  model_storage_path: "/app/models"
+  checkpoint_storage_path: "/app/checkpoints"
+  log_storage_path: "/app/logs"
+  
+  # Cleanup policies
+  max_model_versions: 10
+  log_retention_days: 30
+  checkpoint_retention_count: 50
+
+# Evaluation Configuration
+evaluation:
+  enabled: true
+  frequency: 10  # every N rounds
+  test_data_path: "/app/data/test"
+  
+  # Metrics
+  perception_metrics: true
+  driving_metrics: true
+  privacy_metrics: true
+  performance_metrics: true
+  
+  # Benchmarks
+  automotive_benchmarks: true
+  federated_benchmarks: true
+  robustness_tests: true
+  
+  # Reporting
+  report_generation: true
+  dashboard_updates: true
+
+# Deployment Configuration
+deployment:
+  environment: "production"
+  region: "us-east-1"
+  availability_zone: "us-east-1a"
+  
+  # Scaling
+  auto_scaling: true
+  min_replicas: 2
+  max_replicas: 10
+  target_cpu_utilization: 70
+  
+  # Updates
+  rolling_updates: true
+  health_check_grace_period: 30
+  update_strategy: "blue_green"
+
+# Security Configuration
+security:
+  authentication:
+    enabled: true
+    method: "jwt"
+    token_expiry: 3600
+    refresh_enabled: true
+  
+  authorization:
+    enabled: true
+    rbac: true
+    default_role: "client"
+  
+  network:
+    firewall_enabled: true
+    allowed_ips: []  # Empty means all IPs allowed
+    blocked_ips: []
+    
+  audit:
+    enabled: true
+    log_level: "INFO"
+    retention_days: 90
+
+# Compliance Configuration
+compliance:
+  iso26262:
+    enabled: true
+    safety_level: "ASIL-B"
+    validation_required: true
+  
+  gdpr:
+    enabled: true
+    data_retention_days: 365
+    anonymization_required: true
+  
+  automotive_standards:
+    enabled: true
+    standards: ["ISO26262", "ISO21448"]
+
+# Development Overrides (disabled in production)
+development:
+  debug_mode: false
+  verbose_logging: false
+  mock_clients: false
+  synthetic_data: false
+  
+# Feature Flags
+features:
+  multi_modal_vit: true
+  temporal_vit: true
+  advanced_privacy: true
+  edge_optimization: true
+  real_time_monitoring: true
+  auto_scaling: true
+  model_compression: true
+  federated_analytics: true

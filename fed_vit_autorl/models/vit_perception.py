@@ -57,8 +57,26 @@ class ViTPerception(nn.Module):
     
     def _load_pretrained_weights(self) -> None:
         """Load pretrained ViT weights from transformers."""
-        # This would load actual pretrained weights in practice
-        pass
+        try:
+            # Load pretrained ViT-Base model
+            pretrained_model = ViTModel.from_pretrained('google/vit-base-patch16-384')
+            
+            # Transfer compatible weights
+            state_dict = pretrained_model.state_dict()
+            model_state_dict = self.vit.state_dict()
+            
+            # Filter and load compatible weights
+            compatible_weights = {}
+            for name, param in state_dict.items():
+                if name in model_state_dict and param.shape == model_state_dict[name].shape:
+                    compatible_weights[name] = param
+            
+            self.vit.load_state_dict(compatible_weights, strict=False)
+            print(f"Loaded {len(compatible_weights)} pretrained weights")
+            
+        except Exception as e:
+            print(f"Warning: Could not load pretrained weights: {e}")
+            print("Continuing with random initialization")
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass through ViT perception model.
@@ -84,3 +102,25 @@ class ViTPerception(nn.Module):
         """
         outputs = self.vit(pixel_values=x)
         return outputs.last_hidden_state[:, 0]  # CLS token
+    
+    def get_patch_features(self, x: torch.Tensor) -> torch.Tensor:
+        """Extract all patch features for dense prediction tasks.
+        
+        Args:
+            x: Input tensor of shape (batch_size, 3, height, width)
+            
+        Returns:
+            Patch features of shape (batch_size, num_patches + 1, embed_dim)
+        """
+        outputs = self.vit(pixel_values=x)
+        return outputs.last_hidden_state
+    
+    def freeze_backbone(self) -> None:
+        """Freeze ViT backbone parameters for fine-tuning."""
+        for param in self.vit.parameters():
+            param.requires_grad = False
+    
+    def unfreeze_backbone(self) -> None:
+        """Unfreeze ViT backbone parameters."""
+        for param in self.vit.parameters():
+            param.requires_grad = True
