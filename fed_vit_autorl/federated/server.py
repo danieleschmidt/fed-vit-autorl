@@ -28,6 +28,7 @@ class FederatedServer:
     def __init__(
         self,
         global_model: nn.Module,
+        num_clients: int = 100,
         aggregation_method: str = "fedavg",
         min_clients: int = 10,
         max_clients: int = 1000,
@@ -39,6 +40,7 @@ class FederatedServer:
         
         Args:
             global_model: Global model to be trained
+            num_clients: Total number of clients in federation
             aggregation_method: Aggregation algorithm ("fedavg", "fedprox", "adaptive")  
             min_clients: Minimum clients needed per round
             max_clients: Maximum clients to select per round
@@ -48,6 +50,7 @@ class FederatedServer:
         """
         self.global_model = global_model.to(device)
         self.device = device
+        self.num_clients = num_clients
         self.rounds = rounds
         self.min_clients = min_clients
         self.max_clients = max_clients
