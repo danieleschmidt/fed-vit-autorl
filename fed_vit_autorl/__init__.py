@@ -12,7 +12,7 @@ except ImportError:
 
 # Conditional imports for optional dependencies
 try:
-    from .models.vit_perception import ViTPerception
+    from .models import ViTPerception
     from .federated.client import FederatedClient, VehicleClient
     from .federated.server import FederatedServer
     from .federated.aggregation import FedAvgAggregator

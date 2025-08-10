@@ -237,13 +237,325 @@ class SafetyController:
         # Steering limits to prevent rollovers
         max_steering = self._calculate_max_steering(current_state.speed)
         if abs(safe_action.get('steering', 0.0)) > max_steering:
-            safe_action['steering'] = max_steering * np.sign(safe_action.get('steering', 0.0))\n            safety_messages.append(f"Steering limited to prevent rollover: {max_steering:.2f} rad")
-        \n        # Throttle and brake consistency\n        if safe_action.get('throttle', 0.0) > 0.1 and safe_action.get('brake', 0.0) > 0.1:\n            # Prioritize braking\n            safe_action['throttle'] = 0.0\n            safety_messages.append(\"Throttle zeroed due to simultaneous brake input\")\n        \n        # Emergency brake override\n        current_time = time.time()\n        if self.current_safety_level in [SafetyLevel.EMERGENCY, SafetyLevel.CRITICAL]:\n            if current_time - self.last_emergency_brake > 0.1:  # Avoid repeated emergency braking\n                safe_action['throttle'] = 0.0\n                safe_action['brake'] = 1.0\n                safe_action['steering'] = 0.0  # Straight ahead\n                self.last_emergency_brake = current_time\n                safety_messages.append(\"Emergency brake activated\")\n        \n        return safe_action, safety_messages\n    \n    def _calculate_ttc(self, rel_pos: Tuple[float, float], \n                      rel_vel: Tuple[float, float]) -> float:\n        \"\"\"Calculate Time to Collision.\"\"\"\n        if abs(rel_vel[0]) < 1e-6 and abs(rel_vel[1]) < 1e-6:\n            return float('inf')\n        \n        # Simple TTC calculation (can be made more sophisticated)\n        distance = math.sqrt(rel_pos[0]**2 + rel_pos[1]**2)\n        closing_speed = math.sqrt(rel_vel[0]**2 + rel_vel[1]**2)\n        \n        if closing_speed < 1e-6:\n            return float('inf')\n        \n        return distance / closing_speed\n    \n    def _calculate_max_steering(self, speed: float) -> float:\n        \"\"\"Calculate maximum safe steering angle based on speed.\"\"\"\n        if speed < 1.0:\n            return math.pi / 4  # 45 degrees at low speed\n        \n        # Limit based on lateral acceleration\n        # lat_accel = v^2 * tan(steering) / wheelbase\n        # Assuming wheelbase of 2.5m\n        wheelbase = 2.5\n        max_tan_steering = self.lateral_acceleration_limit * wheelbase / (speed ** 2)\n        \n        return min(math.atan(max_tan_steering), math.pi / 6)  # Max 30 degrees\n    \n    def _monitoring_loop(self) -> None:\n        \"\"\"Background monitoring loop.\"\"\"\n        while self.monitoring_active:\n            try:\n                # Process queued events\n                while not self.event_queue.empty():\n                    event = self.event_queue.get_nowait()\n                    self._process_safety_event(event)\n                \n                time.sleep(0.01)  # 100Hz monitoring\n            \n            except Exception as e:\n                logger.error(f\"Safety monitoring error: {e}\")\n    \n    def _process_safety_event(self, event: SafetyEvent) -> None:\n        \"\"\"Process a safety event.\"\"\"\n        self.safety_events.append(event)\n        \n        # Update current safety level\n        if event.severity.value > self.current_safety_level.value:\n            self.current_safety_level = event.severity\n        \n        # Log critical events\n        if event.severity in [SafetyLevel.CRITICAL, SafetyLevel.EMERGENCY]:\n            logger.warning(f\"Safety event: {event.description}\")\n        \n        # Trigger emergency protocols if needed\n        if event.severity == SafetyLevel.EMERGENCY and self.enable_failsafe:\n            self._activate_failsafe_mode(event)\n    \n    def _activate_failsafe_mode(self, trigger_event: SafetyEvent) -> None:\n        \"\"\"Activate failsafe mode.\"\"\"\n        logger.critical(f\"FAILSAFE ACTIVATED: {trigger_event.description}\")\n        # In a real system, this would:\n        # 1. Override all control inputs\n        # 2. Apply emergency braking\n        # 3. Activate hazard lights\n        # 4. Send emergency signals to other vehicles\n        # 5. Log detailed incident report\n    \n    def get_safety_status(self) -> Dict[str, Any]:\n        \"\"\"Get current safety status.\"\"\"\n        return {\n            'safety_level': self.current_safety_level.value,\n            'recent_events': [{\n                'type': event.event_type,\n                'severity': event.severity.value,\n                'description': event.description,\n                'timestamp': event.timestamp,\n            } for event in self.safety_events[-10:]],  # Last 10 events\n            'monitoring_active': self.monitoring_active,\n            'failsafe_enabled': self.enable_failsafe,\n        }
+            safe_action['steering'] = max_steering * np.sign(safe_action.get('steering', 0.0))
+            safety_messages.append(f"Steering limited to prevent rollover: {max_steering:.2f} rad")
+        
+        # Throttle and brake consistency
+        if safe_action.get('throttle', 0.0) > 0.1 and safe_action.get('brake', 0.0) > 0.1:
+            # Prioritize braking
+            safe_action['throttle'] = 0.0
+            safety_messages.append("Throttle zeroed due to simultaneous brake input")
+        
+        # Emergency brake override
+        current_time = time.time()
+        if self.current_safety_level in [SafetyLevel.EMERGENCY, SafetyLevel.CRITICAL]:
+            if current_time - self.last_emergency_brake > 0.1:  # Avoid repeated emergency braking
+                safe_action['throttle'] = 0.0
+                safe_action['brake'] = 1.0
+                safe_action['steering'] = 0.0  # Straight ahead
+                self.last_emergency_brake = current_time
+                safety_messages.append("Emergency brake activated")
+        
+        return safe_action, safety_messages
+    
+    def _calculate_ttc(self, rel_pos: Tuple[float, float], 
+                      rel_vel: Tuple[float, float]) -> float:
+        """Calculate Time to Collision."""
+        if abs(rel_vel[0]) < 1e-6 and abs(rel_vel[1]) < 1e-6:
+            return float('inf')
+        
+        # Simple TTC calculation (can be made more sophisticated)
+        distance = math.sqrt(rel_pos[0]**2 + rel_pos[1]**2)
+        closing_speed = math.sqrt(rel_vel[0]**2 + rel_vel[1]**2)
+        
+        if closing_speed < 1e-6:
+            return float('inf')
+        
+        return distance / closing_speed
+    
+    def _calculate_max_steering(self, speed: float) -> float:
+        """Calculate maximum safe steering angle based on speed."""
+        if speed < 1.0:
+            return math.pi / 4  # 45 degrees at low speed
+        
+        # Limit based on lateral acceleration
+        # lat_accel = v^2 * tan(steering) / wheelbase
+        # Assuming wheelbase of 2.5m
+        wheelbase = 2.5
+        max_tan_steering = self.lateral_acceleration_limit * wheelbase / (speed ** 2)
+        
+        return min(math.atan(max_tan_steering), math.pi / 6)  # Max 30 degrees
+    
+    def _monitoring_loop(self) -> None:
+        """Background monitoring loop."""
+        while self.monitoring_active:
+            try:
+                # Process queued events
+                while not self.event_queue.empty():
+                    event = self.event_queue.get_nowait()
+                    self._process_safety_event(event)
+                
+                time.sleep(0.01)  # 100Hz monitoring
+            
+            except Exception as e:
+                logger.error(f"Safety monitoring error: {e}")
+    
+    def _process_safety_event(self, event: SafetyEvent) -> None:
+        """Process a safety event."""
+        self.safety_events.append(event)
+        
+        # Update current safety level
+        if event.severity.value > self.current_safety_level.value:
+            self.current_safety_level = event.severity
+        
+        # Log critical events
+        if event.severity in [SafetyLevel.CRITICAL, SafetyLevel.EMERGENCY]:
+            logger.warning(f"Safety event: {event.description}")
+        
+        # Trigger emergency protocols if needed
+        if event.severity == SafetyLevel.EMERGENCY and self.enable_failsafe:
+            self._activate_failsafe_mode(event)
+    
+    def _activate_failsafe_mode(self, trigger_event: SafetyEvent) -> None:
+        """Activate failsafe mode."""
+        logger.critical(f"FAILSAFE ACTIVATED: {trigger_event.description}")
+        # In a real system, this would:
+        # 1. Override all control inputs
+        # 2. Apply emergency braking
+        # 3. Activate hazard lights
+        # 4. Send emergency signals to other vehicles
+        # 5. Log detailed incident report
+    
+    def get_safety_status(self) -> Dict[str, Any]:
+        """Get current safety status."""
+        return {
+            'safety_level': self.current_safety_level.value,
+            'recent_events': [{
+                'type': event.event_type,
+                'severity': event.severity.value,
+                'description': event.description,
+                'timestamp': event.timestamp,
+            } for event in self.safety_events[-10:]],  # Last 10 events
+            'monitoring_active': self.monitoring_active,
+            'failsafe_enabled': self.enable_failsafe,
+        }
 
 
 class ModelHealthMonitor:
-    \"\"\"Monitor model health and performance degradation.\"\"\"\n    \n    def __init__(self, alert_threshold: float = 0.1):\n        \"\"\"Initialize model health monitor.\n        \n        Args:\n            alert_threshold: Threshold for performance degradation alerts\n        \"\"\"\n        self.alert_threshold = alert_threshold\n        self.baseline_metrics = {}\n        self.current_metrics = {}\n        self.performance_history = []\n        self.anomaly_scores = []\n        \n    def set_baseline(self, metrics: Dict[str, float]) -> None:\n        \"\"\"Set baseline performance metrics.\"\"\"\n        self.baseline_metrics = metrics.copy()\n        logger.info(f\"Baseline metrics set: {metrics}\")\n    \n    def update_metrics(self, metrics: Dict[str, float]) -> List[str]:\n        \"\"\"Update current metrics and check for degradation.\n        \n        Args:\n            metrics: Current performance metrics\n            \n        Returns:\n            List of alert messages\n        \"\"\"\n        self.current_metrics = metrics.copy()\n        self.performance_history.append((time.time(), metrics.copy()))\n        \n        alerts = []\n        \n        # Check for significant degradation\n        for metric_name, current_value in metrics.items():\n            if metric_name in self.baseline_metrics:\n                baseline_value = self.baseline_metrics[metric_name]\n                \n                # Calculate relative change\n                if baseline_value != 0:\n                    relative_change = abs(current_value - baseline_value) / abs(baseline_value)\n                    \n                    if relative_change > self.alert_threshold:\n                        alerts.append(\n                            f\"Performance degradation in {metric_name}: \"\n                            f\"{baseline_value:.3f} -> {current_value:.3f} \"\n                            f\"({relative_change:.1%} change)\"\n                        )\n        \n        # Detect anomalies using simple statistical method\n        if len(self.performance_history) > 10:\n            anomaly_score = self._calculate_anomaly_score(metrics)\n            self.anomaly_scores.append(anomaly_score)\n            \n            if anomaly_score > 2.0:  # 2 standard deviations\n                alerts.append(f\"Anomalous performance detected: score={anomaly_score:.2f}\")\n        \n        return alerts\n    \n    def _calculate_anomaly_score(self, current_metrics: Dict[str, float]) -> float:\n        \"\"\"Calculate anomaly score based on historical performance.\"\"\"\n        if len(self.performance_history) < 10:\n            return 0.0\n        \n        # Get recent history (last 20 measurements)\n        recent_history = self.performance_history[-20:]\n        \n        total_score = 0.0\n        metric_count = 0\n        \n        for metric_name, current_value in current_metrics.items():\n            # Extract historical values for this metric\n            historical_values = [\n                metrics[metric_name] for _, metrics in recent_history\n                if metric_name in metrics\n            ]\n            \n            if len(historical_values) >= 5:\n                mean_value = np.mean(historical_values)\n                std_value = np.std(historical_values)\n                \n                if std_value > 0:\n                    # Z-score based anomaly detection\n                    z_score = abs(current_value - mean_value) / std_value\n                    total_score += z_score\n                    metric_count += 1\n        \n        return total_score / max(metric_count, 1)\n    \n    def get_health_report(self) -> Dict[str, Any]:\n        \"\"\"Generate comprehensive health report.\"\"\"\n        report = {\n            'baseline_metrics': self.baseline_metrics,\n            'current_metrics': self.current_metrics,\n            'performance_trend': 'stable',  # Could implement trend analysis\n            'anomaly_score': self.anomaly_scores[-1] if self.anomaly_scores else 0.0,\n            'health_status': 'healthy',  # Overall health assessment\n        }\n        \n        # Determine overall health status\n        recent_alerts = self.update_metrics(self.current_metrics)\n        if recent_alerts:\n            if any('anomalous' in alert.lower() for alert in recent_alerts):\n                report['health_status'] = 'degraded'\n            else:\n                report['health_status'] = 'warning'\n        \n        return report
+    """Monitor model health and performance degradation."""
+    
+    def __init__(self, alert_threshold: float = 0.1):
+        """Initialize model health monitor.
+        
+        Args:
+            alert_threshold: Threshold for performance degradation alerts
+        """
+        self.alert_threshold = alert_threshold
+        self.baseline_metrics = {}
+        self.current_metrics = {}
+        self.performance_history = []
+        self.anomaly_scores = []
+        
+    def set_baseline(self, metrics: Dict[str, float]) -> None:
+        """Set baseline performance metrics."""
+        self.baseline_metrics = metrics.copy()
+        logger.info(f"Baseline metrics set: {metrics}")
+    
+    def update_metrics(self, metrics: Dict[str, float]) -> List[str]:
+        """Update current metrics and check for degradation.
+        
+        Args:
+            metrics: Current performance metrics
+            
+        Returns:
+            List of alert messages
+        """
+        self.current_metrics = metrics.copy()
+        self.performance_history.append((time.time(), metrics.copy()))
+        
+        alerts = []
+        
+        # Check for significant degradation
+        for metric_name, current_value in metrics.items():
+            if metric_name in self.baseline_metrics:
+                baseline_value = self.baseline_metrics[metric_name]
+                
+                # Calculate relative change
+                if baseline_value != 0:
+                    relative_change = abs(current_value - baseline_value) / abs(baseline_value)
+                    
+                    if relative_change > self.alert_threshold:
+                        alerts.append(
+                            f"Performance degradation in {metric_name}: "
+                            f"{baseline_value:.3f} -> {current_value:.3f} "
+                            f"({relative_change:.1%} change)"
+                        )
+        
+        # Detect anomalies using simple statistical method
+        if len(self.performance_history) > 10:
+            anomaly_score = self._calculate_anomaly_score(metrics)
+            self.anomaly_scores.append(anomaly_score)
+            
+            if anomaly_score > 2.0:  # 2 standard deviations
+                alerts.append(f"Anomalous performance detected: score={anomaly_score:.2f}")
+        
+        return alerts
+    
+    def _calculate_anomaly_score(self, current_metrics: Dict[str, float]) -> float:
+        """Calculate anomaly score based on historical performance."""
+        if len(self.performance_history) < 10:
+            return 0.0
+        
+        # Get recent history (last 20 measurements)
+        recent_history = self.performance_history[-20:]
+        
+        total_score = 0.0
+        metric_count = 0
+        
+        for metric_name, current_value in current_metrics.items():
+            # Extract historical values for this metric
+            historical_values = [
+                metrics[metric_name] for _, metrics in recent_history
+                if metric_name in metrics
+            ]
+            
+            if len(historical_values) >= 5:
+                mean_value = np.mean(historical_values)
+                std_value = np.std(historical_values)
+                
+                if std_value > 0:
+                    # Z-score based anomaly detection
+                    z_score = abs(current_value - mean_value) / std_value
+                    total_score += z_score
+                    metric_count += 1
+        
+        return total_score / max(metric_count, 1)
+    
+    def get_health_report(self) -> Dict[str, Any]:
+        """Generate comprehensive health report."""
+        report = {
+            'baseline_metrics': self.baseline_metrics,
+            'current_metrics': self.current_metrics,
+            'performance_trend': 'stable',  # Could implement trend analysis
+            'anomaly_score': self.anomaly_scores[-1] if self.anomaly_scores else 0.0,
+            'health_status': 'healthy',  # Overall health assessment
+        }
+        
+        # Determine overall health status
+        recent_alerts = self.update_metrics(self.current_metrics)
+        if recent_alerts:
+            if any('anomalous' in alert.lower() for alert in recent_alerts):
+                report['health_status'] = 'degraded'
+            else:
+                report['health_status'] = 'warning'
+        
+        return report
 
 
 class CertificationValidator:
-    \"\"\"Validate model outputs against automotive safety standards.\"\"\"\n    \n    def __init__(self):\n        \"\"\"Initialize certification validator.\"\"\"\n        self.iso26262_checks = {\n            'detection_latency_ms': 100,  # Max detection latency\n            'min_detection_accuracy': 0.95,  # Minimum detection accuracy\n            'max_false_positive_rate': 0.05,  # Maximum false positive rate\n            'min_recall_critical_objects': 0.99,  # Minimum recall for critical objects\n        }\n        \n        self.validation_history = []\n    \n    def validate_iso26262_compliance(\n        self,\n        metrics: Dict[str, float],\n        test_results: Dict[str, Any],\n    ) -> Tuple[bool, List[str]]:\n        \"\"\"Validate compliance with ISO 26262 functional safety standard.\n        \n        Args:\n            metrics: Performance metrics\n            test_results: Detailed test results\n            \n        Returns:\n            Tuple of (is_compliant, violations)\n        \"\"\"\n        violations = []\n        \n        # Check detection latency\n        if metrics.get('avg_inference_latency_ms', 0) > self.iso26262_checks['detection_latency_ms']:\n            violations.append(\n                f\"Detection latency exceeds limit: \"\n                f\"{metrics['avg_inference_latency_ms']:.1f}ms > \"\n                f\"{self.iso26262_checks['detection_latency_ms']}ms\"\n            )\n        \n        # Check detection accuracy\n        if metrics.get('mAP', 0) < self.iso26262_checks['min_detection_accuracy']:\n            violations.append(\n                f\"Detection accuracy below minimum: \"\n                f\"{metrics['mAP']:.3f} < {self.iso26262_checks['min_detection_accuracy']}\"\n            )\n        \n        # Check false positive rate\n        fp_rate = 1.0 - metrics.get('mean_precision', 1.0)\n        if fp_rate > self.iso26262_checks['max_false_positive_rate']:\n            violations.append(\n                f\"False positive rate too high: \"\n                f\"{fp_rate:.3f} > {self.iso26262_checks['max_false_positive_rate']}\"\n            )\n        \n        # Check recall for critical objects (pedestrians, cyclists)\n        critical_recall = test_results.get('critical_object_recall', 0.0)\n        if critical_recall < self.iso26262_checks['min_recall_critical_objects']:\n            violations.append(\n                f\"Critical object recall too low: \"\n                f\"{critical_recall:.3f} < {self.iso26262_checks['min_recall_critical_objects']}\"\n            )\n        \n        is_compliant = len(violations) == 0\n        \n        # Record validation result\n        self.validation_history.append({\n            'timestamp': time.time(),\n            'compliant': is_compliant,\n            'violations': violations,\n            'metrics': metrics.copy(),\n        })\n        \n        return is_compliant, violations\n    \n    def generate_certification_report(self) -> str:\n        \"\"\"Generate certification compliance report.\"\"\"\n        if not self.validation_history:\n            return \"No validation data available\"\n        \n        recent_validations = self.validation_history[-10:]  # Last 10 validations\n        compliant_count = sum(1 for v in recent_validations if v['compliant'])\n        compliance_rate = compliant_count / len(recent_validations)\n        \n        report = [\n            \"=== ISO 26262 Compliance Report ===\",\n            f\"Recent compliance rate: {compliance_rate:.1%} ({compliant_count}/{len(recent_validations)})\",\n            \"\",\n            \"Requirements:\",\n        ]\n        \n        for requirement, threshold in self.iso26262_checks.items():\n            report.append(f\"  {requirement}: {threshold}\")\n        \n        if recent_validations:\n            latest = recent_validations[-1]\n            report.extend([\n                \"\",\n                \"Latest validation:\",\n                f\"  Status: {'COMPLIANT' if latest['compliant'] else 'NON-COMPLIANT'}\",\n            ])\n            \n            if latest['violations']:\n                report.append(\"  Violations:\")\n                for violation in latest['violations']:\n                    report.append(f\"    - {violation}\")\n        \n        return \"\\n\".join(report)
+    """Validate model outputs against automotive safety standards."""
+    
+    def __init__(self):
+        """Initialize certification validator."""
+        self.iso26262_checks = {
+            'detection_latency_ms': 100,  # Max detection latency
+            'min_detection_accuracy': 0.95,  # Minimum detection accuracy
+            'max_false_positive_rate': 0.05,  # Maximum false positive rate
+            'min_recall_critical_objects': 0.99,  # Minimum recall for critical objects
+        }
+        
+        self.validation_history = []
+    
+    def validate_iso26262_compliance(
+        self,
+        metrics: Dict[str, float],
+        test_results: Dict[str, Any],
+    ) -> Tuple[bool, List[str]]:
+        """Validate compliance with ISO 26262 functional safety standard.
+        
+        Args:
+            metrics: Performance metrics
+            test_results: Detailed test results
+            
+        Returns:
+            Tuple of (is_compliant, violations)
+        """
+        violations = []
+        
+        # Check detection latency
+        if metrics.get('avg_inference_latency_ms', 0) > self.iso26262_checks['detection_latency_ms']:
+            violations.append(
+                f"Detection latency exceeds limit: "
+                f"{metrics['avg_inference_latency_ms']:.1f}ms > "
+                f"{self.iso26262_checks['detection_latency_ms']}ms"
+            )
+        
+        # Check detection accuracy
+        if metrics.get('mAP', 0) < self.iso26262_checks['min_detection_accuracy']:
+            violations.append(
+                f"Detection accuracy below minimum: "
+                f"{metrics['mAP']:.3f} < {self.iso26262_checks['min_detection_accuracy']}"
+            )
+        
+        # Check false positive rate
+        fp_rate = 1.0 - metrics.get('mean_precision', 1.0)
+        if fp_rate > self.iso26262_checks['max_false_positive_rate']:
+            violations.append(
+                f"False positive rate too high: "
+                f"{fp_rate:.3f} > {self.iso26262_checks['max_false_positive_rate']}"
+            )
+        
+        # Check recall for critical objects (pedestrians, cyclists)
+        critical_recall = test_results.get('critical_object_recall', 0.0)
+        if critical_recall < self.iso26262_checks['min_recall_critical_objects']:
+            violations.append(
+                f"Critical object recall too low: "
+                f"{critical_recall:.3f} < {self.iso26262_checks['min_recall_critical_objects']}"
+            )
+        
+        is_compliant = len(violations) == 0
+        
+        # Record validation result
+        self.validation_history.append({
+            'timestamp': time.time(),
+            'compliant': is_compliant,
+            'violations': violations,
+            'metrics': metrics.copy(),
+        })
+        
+        return is_compliant, violations
+    
+    def generate_certification_report(self) -> str:
+        """Generate certification compliance report."""
+        if not self.validation_history:
+            return "No validation data available"
+        
+        recent_validations = self.validation_history[-10:]  # Last 10 validations
+        compliant_count = sum(1 for v in recent_validations if v['compliant'])
+        compliance_rate = compliant_count / len(recent_validations)
+        
+        report = [
+            "=== ISO 26262 Compliance Report ===",
+            f"Recent compliance rate: {compliance_rate:.1%} ({compliant_count}/{len(recent_validations)})",
+            "",
+            "Requirements:",
+        ]
+        
+        for requirement, threshold in self.iso26262_checks.items():
+            report.append(f"  {requirement}: {threshold}")
+        
+        if recent_validations:
+            latest = recent_validations[-1]
+            report.extend([
+                "",
+                "Latest validation:",
+                f"  Status: {'COMPLIANT' if latest['compliant'] else 'NON-COMPLIANT'}",
+            ])
+            
+            if latest['violations']:
+                report.append("  Violations:")
+                for violation in latest['violations']:
+                    report.append(f"    - {violation}")
+        
+        return "\
+".join(report)

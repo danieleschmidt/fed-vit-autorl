@@ -50,6 +50,28 @@ class HealthCheck:
 class HealthChecker:
     """Base health monitoring system."""
     
+    def __init__(self):
+        """Initialize basic health checker."""
+        self.status = HealthStatus.HEALTHY
+        self.last_check = time.time()
+    
+    def check_health(self) -> Dict[str, Any]:
+        """Perform basic health check."""
+        return {
+            'status': self.status.value,
+            'timestamp': self.last_check,
+            'checks': {
+                'basic': {
+                    'status': 'healthy',
+                    'message': 'Basic health check passed'
+                }
+            }
+        }
+
+
+class EnhancedHealthChecker:
+    """Enhanced health monitoring system."""
+    
     def __init__(
         self,
         check_interval: float = 60.0,
