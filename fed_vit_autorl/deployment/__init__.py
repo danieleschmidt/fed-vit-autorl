@@ -5,6 +5,14 @@ from .container_orchestration import ContainerOrchestrator, KubernetesDeployment
 from .scaling_manager import ProductionScalingManager
 from .monitoring_deployment import MonitoringStack, ObservabilityDeployment
 from .security_deployment import SecurityDeployment, ComplianceValidator
+from .hyperscale_federation import (
+    HyperscaleCoordinator,
+    GlobalRegion,
+    GlobalClient,
+    GlobalAggregationStrategy,
+    RegionType,
+    ComplianceRegime,
+)
 
 __all__ = [
     "DeploymentManager",
@@ -16,4 +24,10 @@ __all__ = [
     "ObservabilityDeployment",
     "SecurityDeployment",
     "ComplianceValidator",
+    "HyperscaleCoordinator",
+    "GlobalRegion", 
+    "GlobalClient",
+    "GlobalAggregationStrategy",
+    "RegionType",
+    "ComplianceRegime",
 ]
