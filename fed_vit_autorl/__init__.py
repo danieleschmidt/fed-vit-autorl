@@ -107,6 +107,40 @@ if _TORCH_AVAILABLE:
 else:
     FederatedVehicleRL = _MissingDependency
 
+# Advanced components
+try:
+    from .federated.advanced_aggregation import (
+        AttentionBasedAggregator,
+        HierarchicalFedAggregator,
+        AdversarialRobustAggregator,
+        MetaFedAggregator,
+    )
+    from .models.advanced_vit import (
+        AdaptiveViT,
+        MultiModalPatchEmbedding,
+        TemporalPatchEmbedding,
+        FederatedViTEnsemble,
+    )
+    from .autonomous import (
+        AutonomousOptimizer,
+        SelfHealingSystem,
+        PerformancePredictor,
+        AutoNAS,
+    )
+    from .deployment.hyperscale_federation import (
+        HyperscaleCoordinator,
+        GlobalRegion,
+        GlobalClient,
+    )
+    from .research.experimental_framework import (
+        ExperimentRunner,
+        ExperimentConfig,
+        StatisticalValidator,
+    )
+    _ADVANCED_COMPONENTS_AVAILABLE = True
+except ImportError:
+    _ADVANCED_COMPONENTS_AVAILABLE = False
+
 __all__ = [
     "__version__",
     "ViTPerception", 
@@ -117,5 +151,28 @@ __all__ = [
     "FederatedPPO",
     "EdgeOptimizer",
     "CARLAFederatedEnv",
-    "FederatedVehicleRL"
+    "FederatedVehicleRL",
 ]
+
+# Add advanced components if available
+if _ADVANCED_COMPONENTS_AVAILABLE:
+    __all__.extend([
+        "AttentionBasedAggregator",
+        "HierarchicalFedAggregator", 
+        "AdversarialRobustAggregator",
+        "MetaFedAggregator",
+        "AdaptiveViT",
+        "MultiModalPatchEmbedding",
+        "TemporalPatchEmbedding", 
+        "FederatedViTEnsemble",
+        "AutonomousOptimizer",
+        "SelfHealingSystem",
+        "PerformancePredictor",
+        "AutoNAS",
+        "HyperscaleCoordinator",
+        "GlobalRegion",
+        "GlobalClient",
+        "ExperimentRunner",
+        "ExperimentConfig", 
+        "StatisticalValidator",
+    ])
