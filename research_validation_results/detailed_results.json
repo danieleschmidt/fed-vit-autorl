@@ -1,0 +1,544 @@
+{
+  "summary_statistics": {
+    "mh_fed": {
+      "accuracy": {
+        "mean": 0.8731268976545088,
+        "std": 0.01905585639695176,
+        "min": 0.8232439905910512,
+        "max": 0.9275234663185421
+      },
+      "f1_score": {
+        "mean": 0.8456251582807239,
+        "std": 0.018518402776155737,
+        "min": 0.7926758065148574,
+        "max": 0.8940866544809619
+      },
+      "iou": {
+        "mean": 0.7792385025554427,
+        "std": 0.019080011145676527,
+        "min": 0.7249627389834749,
+        "max": 0.8322939206709898
+      },
+      "communication_efficiency": {
+        "mean": 0.8212680540915913,
+        "std": 0.01841728878250984,
+        "min": 0.7774878674360994,
+        "max": 0.866456110390029
+      },
+      "privacy_preservation": {
+        "mean": 0.7512916261034471,
+        "std": 0.020669318272216686,
+        "min": 0.6993404097749867,
+        "max": 0.8292199784534823
+      }
+    },
+    "app_vit": {
+      "accuracy": {
+        "mean": 0.8401064191475924,
+        "std": 0.0201526310930138,
+        "min": 0.7852079437405619,
+        "max": 0.8915928698047384
+      },
+      "f1_score": {
+        "mean": 0.8167776508740066,
+        "std": 0.019090340001515212,
+        "min": 0.7737736780874102,
+        "max": 0.8567814627876068
+      },
+      "iou": {
+        "mean": 0.7509278165180606,
+        "std": 0.019654899141874314,
+        "min": 0.6838245733794295,
+        "max": 0.8011325429243649
+      },
+      "communication_efficiency": {
+        "mean": 0.7817907645414757,
+        "std": 0.022680758949291353,
+        "min": 0.7304989530217386,
+        "max": 0.8451338359756125
+      },
+      "privacy_preservation": {
+        "mean": 0.9020213720500739,
+        "std": 0.020799826742962543,
+        "min": 0.8547836582595659,
+        "max": 0.9469145224139822
+      }
+    },
+    "cd_ft": {
+      "accuracy": {
+        "mean": 0.8610374465308827,
+        "std": 0.019884909646311587,
+        "min": 0.8146241435304964,
+        "max": 0.9134402945616333
+      },
+      "f1_score": {
+        "mean": 0.8412529143064007,
+        "std": 0.01808099614204601,
+        "min": 0.7836328980305305,
+        "max": 0.8930550258290866
+      },
+      "iou": {
+        "mean": 0.768182233916152,
+        "std": 0.020656867060446605,
+        "min": 0.720427255498323,
+        "max": 0.8198041531665139
+      },
+      "communication_efficiency": {
+        "mean": 0.7962775528802886,
+        "std": 0.018913851064245816,
+        "min": 0.745886190052452,
+        "max": 0.8497279624345504
+      },
+      "privacy_preservation": {
+        "mean": 0.7215569656354506,
+        "std": 0.02018017239184166,
+        "min": 0.6616341230942614,
+        "max": 0.7572169562493273
+      }
+    },
+    "fedavg": {
+      "accuracy": {
+        "mean": 0.7935301567056477,
+        "std": 0.01797977147347139,
+        "min": 0.7532941660355991,
+        "max": 0.8482346921773753
+      },
+      "f1_score": {
+        "mean": 0.7586063837339999,
+        "std": 0.019856450200280932,
+        "min": 0.7116031857912032,
+        "max": 0.8073214586279143
+      },
+      "iou": {
+        "mean": 0.6991943476375965,
+        "std": 0.018916294536903685,
+        "min": 0.6476795442269231,
+        "max": 0.7399687203846324
+      },
+      "communication_efficiency": {
+        "mean": 0.696766473834303,
+        "std": 0.01935403449504687,
+        "min": 0.6576379780459154,
+        "max": 0.7466637312861815
+      },
+      "privacy_preservation": {
+        "mean": 0.5002527496706709,
+        "std": 0.01962932455814519,
+        "min": 0.4547394649449276,
+        "max": 0.5607181476513226
+      }
+    },
+    "fedprox": {
+      "accuracy": {
+        "mean": 0.8033573855232421,
+        "std": 0.020360411112016398,
+        "min": 0.7339550011198389,
+        "max": 0.8415378259308921
+      },
+      "f1_score": {
+        "mean": 0.7674776215024104,
+        "std": 0.01906662269072618,
+        "min": 0.7199120393228782,
+        "max": 0.8081714260120433
+      },
+      "iou": {
+        "mean": 0.7101672792462871,
+        "std": 0.01860584415588678,
+        "min": 0.6676508462089937,
+        "max": 0.7538477269503295
+      },
+      "communication_efficiency": {
+        "mean": 0.6777030324179594,
+        "std": 0.019931300662583463,
+        "min": 0.632292803765794,
+        "max": 0.7370300958531092
+      },
+      "privacy_preservation": {
+        "mean": 0.5004354017431408,
+        "std": 0.023544511623711885,
+        "min": 0.43063365086053723,
+        "max": 0.5586770557389479
+      }
+    },
+    "fixed_dp": {
+      "accuracy": {
+        "mean": 0.7527101172024645,
+        "std": 0.021557266702510115,
+        "min": 0.7059438049250838,
+        "max": 0.8087124736227732
+      },
+      "f1_score": {
+        "mean": 0.720217539423994,
+        "std": 0.021059770315599056,
+        "min": 0.6694871521707245,
+        "max": 0.7787428467191391
+      },
+      "iou": {
+        "mean": 0.6695488418183363,
+        "std": 0.01852583354498988,
+        "min": 0.6197033703144449,
+        "max": 0.711918382116699
+      },
+      "communication_efficiency": {
+        "mean": 0.7003360889061662,
+        "std": 0.01801178393044031,
+        "min": 0.6458763674884448,
+        "max": 0.7398483794551554
+      },
+      "privacy_preservation": {
+        "mean": 0.8486373589736098,
+        "std": 0.021009517597341813,
+        "min": 0.7976393364254268,
+        "max": 0.9273063744960514
+      }
+    }
+  },
+  "significant_improvements": [
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedavg",
+      "metric": "accuracy",
+      "improvement": 0.07959674094886104,
+      "p_value": 0.001,
+      "effect_size": 4.2983875541328365
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedavg",
+      "metric": "f1_score",
+      "improvement": 0.08701877454672402,
+      "p_value": 0.001,
+      "effect_size": 4.535197807801698
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedavg",
+      "metric": "iou",
+      "improvement": 0.08004415491784622,
+      "p_value": 0.001,
+      "effect_size": 4.213259867237213
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedavg",
+      "metric": "communication_efficiency",
+      "improvement": 0.1245015802572883,
+      "p_value": 0.001,
+      "effect_size": 6.592386469619174
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedavg",
+      "metric": "privacy_preservation",
+      "improvement": 0.2510388764327762,
+      "p_value": 0.001,
+      "effect_size": 12.458924608926933
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedprox",
+      "metric": "accuracy",
+      "improvement": 0.0697695121312667,
+      "p_value": 0.001,
+      "effect_size": 3.5401379450955086
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedprox",
+      "metric": "f1_score",
+      "improvement": 0.07814753677831354,
+      "p_value": 0.001,
+      "effect_size": 4.1584400067613805
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedprox",
+      "metric": "iou",
+      "improvement": 0.0690712233091556,
+      "p_value": 0.001,
+      "effect_size": 3.6656311900815663
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedprox",
+      "metric": "communication_efficiency",
+      "improvement": 0.14356502167363194,
+      "p_value": 0.001,
+      "effect_size": 7.487369092372241
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fedprox",
+      "metric": "privacy_preservation",
+      "improvement": 0.2508562243603063,
+      "p_value": 0.001,
+      "effect_size": 11.347409846682673
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "accuracy",
+      "improvement": 0.12041678045204429,
+      "p_value": 0.001,
+      "effect_size": 5.929944375720262
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "f1_score",
+      "improvement": 0.1254076188567299,
+      "p_value": 0.001,
+      "effect_size": 6.337211096934422
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "iou",
+      "improvement": 0.1096896607371064,
+      "p_value": 0.001,
+      "effect_size": 5.833649616934723
+    },
+    {
+      "novel_algorithm": "mh_fed",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "communication_efficiency",
+      "improvement": 0.12093196518542515,
+      "p_value": 0.001,
+      "effect_size": 6.639310648301795
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedavg",
+      "metric": "accuracy",
+      "improvement": 0.04657626244194468,
+      "p_value": 0.001,
+      "effect_size": 2.4428705933615027
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedavg",
+      "metric": "f1_score",
+      "improvement": 0.058171267140006644,
+      "p_value": 0.001,
+      "effect_size": 2.9872175261993172
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedavg",
+      "metric": "iou",
+      "improvement": 0.05173346888046415,
+      "p_value": 0.001,
+      "effect_size": 2.6824925000404165
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedavg",
+      "metric": "communication_efficiency",
+      "improvement": 0.08502429070717266,
+      "p_value": 0.001,
+      "effect_size": 4.045424456278603
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedavg",
+      "metric": "privacy_preservation",
+      "improvement": 0.40176862237940303,
+      "p_value": 0.001,
+      "effect_size": 19.87519447970182
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedprox",
+      "metric": "accuracy",
+      "improvement": 0.036749033624350336,
+      "p_value": 0.001,
+      "effect_size": 1.8141828716969315
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedprox",
+      "metric": "f1_score",
+      "improvement": 0.049300029371596166,
+      "p_value": 0.001,
+      "effect_size": 2.584064657830878
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedprox",
+      "metric": "iou",
+      "improvement": 0.040760537271773534,
+      "p_value": 0.001,
+      "effect_size": 2.1306714798799384
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedprox",
+      "metric": "communication_efficiency",
+      "improvement": 0.1040877321235163,
+      "p_value": 0.001,
+      "effect_size": 4.885364991581392
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fedprox",
+      "metric": "privacy_preservation",
+      "improvement": 0.4015859703069331,
+      "p_value": 0.001,
+      "effect_size": 18.11216426260775
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "accuracy",
+      "improvement": 0.08739630194512793,
+      "p_value": 0.001,
+      "effect_size": 4.190674471252569
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "f1_score",
+      "improvement": 0.09656011145001253,
+      "p_value": 0.001,
+      "effect_size": 4.809954975832437
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "iou",
+      "improvement": 0.08137897469972433,
+      "p_value": 0.001,
+      "effect_size": 4.262829389218199
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "communication_efficiency",
+      "improvement": 0.0814546756353095,
+      "p_value": 0.001,
+      "effect_size": 4.003420276587376
+    },
+    {
+      "novel_algorithm": "app_vit",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "privacy_preservation",
+      "improvement": 0.05338401307646412,
+      "p_value": 0.001,
+      "effect_size": 2.5536881249296104
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedavg",
+      "metric": "accuracy",
+      "improvement": 0.0675072898252349,
+      "p_value": 0.001,
+      "effect_size": 3.56571283997766
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedavg",
+      "metric": "f1_score",
+      "improvement": 0.08264653057240079,
+      "p_value": 0.001,
+      "effect_size": 4.356989652210289
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedavg",
+      "metric": "iou",
+      "improvement": 0.06898788627855557,
+      "p_value": 0.001,
+      "effect_size": 3.486599679878739
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedavg",
+      "metric": "communication_efficiency",
+      "improvement": 0.09951107904598555,
+      "p_value": 0.001,
+      "effect_size": 5.200761818512391
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedavg",
+      "metric": "privacy_preservation",
+      "improvement": 0.22130421596477967,
+      "p_value": 0.001,
+      "effect_size": 11.118161892013195
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedprox",
+      "metric": "accuracy",
+      "improvement": 0.05768006100764056,
+      "p_value": 0.001,
+      "effect_size": 2.8664232224167225
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedprox",
+      "metric": "f1_score",
+      "improvement": 0.07377529280399031,
+      "p_value": 0.001,
+      "effect_size": 3.9720065577341734
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedprox",
+      "metric": "iou",
+      "improvement": 0.05801495466986495,
+      "p_value": 0.001,
+      "effect_size": 2.9552189786491656
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedprox",
+      "metric": "communication_efficiency",
+      "improvement": 0.11857452046232919,
+      "p_value": 0.001,
+      "effect_size": 6.104984287160502
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fedprox",
+      "metric": "privacy_preservation",
+      "improvement": 0.22112156389230975,
+      "p_value": 0.001,
+      "effect_size": 10.114266980804407
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "accuracy",
+      "improvement": 0.10832732932841815,
+      "p_value": 0.001,
+      "effect_size": 5.227878401781771
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "f1_score",
+      "improvement": 0.12103537488240668,
+      "p_value": 0.001,
+      "effect_size": 6.184619558402427
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "iou",
+      "improvement": 0.09863339209781574,
+      "p_value": 0.001,
+      "effect_size": 5.034537720665974
+    },
+    {
+      "novel_algorithm": "cd_ft",
+      "baseline_algorithm": "fixed_dp",
+      "metric": "communication_efficiency",
+      "improvement": 0.0959414639741224,
+      "p_value": 0.001,
+      "effect_size": 5.196469281458754
+    }
+  ],
+  "num_runs": 30,
+  "total_algorithms": 6
+}
