@@ -1,28 +1,24 @@
 {
   "overall_passed": false,
-  "overall_score": 0.8365781071900933,
+  "overall_score": 0.8720661298884805,
   "gates_passed": "2/4",
   "results": [
     {
       "name": "Code Quality",
       "description": "Validate Python code quality, structure, and best practices",
       "passed": false,
-      "score": 0.6885093984573426,
+      "score": 0.7897963210857235,
       "messages": [
-        "[INFO] Found 45 Python files",
-        "[WARNING] Failed to parse /root/repo/fed_vit_autorl/models/multimodal_vit.py: unexpected character after line continuation character (<unknown>, line 62)",
-        "[WARNING] Failed to parse /root/repo/fed_vit_autorl/safety/controllers_backup.py: unexpected character after line continuation character (<unknown>, line 240)",
-        "[INFO] Import quality: 82.2% (37/45)",
-        "[WARNING] Failed to analyze docstrings in /root/repo/fed_vit_autorl/models/multimodal_vit.py: unexpected character after line continuation character (<unknown>, line 62)",
-        "[WARNING] Failed to analyze docstrings in /root/repo/fed_vit_autorl/safety/controllers_backup.py: unexpected character after line continuation character (<unknown>, line 240)",
-        "[INFO] Docstring coverage: 92.0% (560/609)",
-        "[WARNING] Failed to analyze type hints in /root/repo/fed_vit_autorl/models/multimodal_vit.py: unexpected character after line continuation character (<unknown>, line 62)",
-        "[WARNING] Failed to analyze type hints in /root/repo/fed_vit_autorl/safety/controllers_backup.py: unexpected character after line continuation character (<unknown>, line 240)",
-        "[INFO] Type hint coverage: 73.3% (382/521)",
-        "[WARNING] Failed to analyze error handling in /root/repo/fed_vit_autorl/models/multimodal_vit.py: unexpected character after line continuation character (<unknown>, line 62)",
-        "[WARNING] Failed to analyze error handling in /root/repo/fed_vit_autorl/safety/controllers_backup.py: unexpected character after line continuation character (<unknown>, line 240)",
-        "[INFO] Error handling coverage: 27.9% (12/43)",
-        "[INFO] Overall code quality score: 68.85%"
+        "[INFO] Found 91 Python files",
+        "[WARNING] Failed to parse /root/repo/fed_vit_autorl/research/validation_runner.py: '(' was never closed (<unknown>, line 629)",
+        "[INFO] Import quality: 92.3% (84/91)",
+        "[WARNING] Failed to analyze docstrings in /root/repo/fed_vit_autorl/research/validation_runner.py: '(' was never closed (<unknown>, line 629)",
+        "[INFO] Docstring coverage: 92.1% (1252/1360)",
+        "[WARNING] Failed to analyze type hints in /root/repo/fed_vit_autorl/research/validation_runner.py: '(' was never closed (<unknown>, line 629)",
+        "[INFO] Type hint coverage: 76.0% (858/1129)",
+        "[WARNING] Failed to analyze error handling in /root/repo/fed_vit_autorl/research/validation_runner.py: '(' was never closed (<unknown>, line 629)",
+        "[INFO] Error handling coverage: 55.6% (50/90)",
+        "[INFO] Overall code quality score: 78.98%"
       ]
     },
     {
@@ -62,21 +58,10 @@
       "name": "Security",
       "description": "Validate security practices and potential vulnerabilities",
       "passed": false,
-      "score": 0.7551515151515151,
+      "score": 0.7807192807192807,
       "messages": [
-        "[WARNING] Security issue in /root/repo/scripts/quality_gates.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/scripts/quality_gates.py: Use of exec() function",
         "[WARNING] Security issue in /root/repo/scripts/quality_gates.py: Use of os.system()",
-        "[WARNING] Security issue in /root/repo/fed_vit_autorl/edge/optimization.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/fed_vit_autorl/evaluation/metrics.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/fed_vit_autorl/federated/client.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/fed_vit_autorl/federated/server.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/fed_vit_autorl/reinforcement/ppo_federated.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/fed_vit_autorl/optimization/performance.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/tests/benchmarks/test_model_performance.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/tests/e2e/test_complete_workflow.py: Use of eval() function",
-        "[WARNING] Security issue in /root/repo/tests/unit/test_vit_perception.py: Use of eval() function",
-        "[INFO] Security pattern analysis: 12 issues found",
+        "[INFO] Security pattern analysis: 1 issues found",
         "[WARNING] \u26a0 No security configuration in .pre-commit-config.yaml",
         "[INFO] \u2713 Security configuration found in config.yaml",
         "[INFO] \u2713 Security configuration found in production.yaml",
@@ -89,14 +74,14 @@
         "[WARNING] \u26a0 No security configuration in performance.yml",
         "[WARNING] \u26a0 No security configuration in security-scan.yml",
         "[INFO] Configuration security score: 45.5%",
-        "[INFO] Overall security score: 75.52%"
+        "[INFO] Overall security score: 78.07%"
       ]
     },
     {
       "name": "Documentation",
       "description": "Validate documentation quality, coverage, and usefulness",
       "passed": true,
-      "score": 0.9026515151515152,
+      "score": 0.9177489177489179,
       "messages": [
         "[INFO] \u2713 README has installation section",
         "[INFO] \u2713 README has usage section",
@@ -111,10 +96,9 @@
         "[INFO] \u2713 Found documentation: IMPLEMENTATION_SUMMARY.md",
         "[INFO] \u2713 Found documentation: ROADMAP.md",
         "[INFO] Documentation structure score: 100.0%",
-        "[WARNING] Failed to analyze /root/repo/fed_vit_autorl/models/multimodal_vit.py: unexpected character after line continuation character (<unknown>, line 62)",
-        "[WARNING] Failed to analyze /root/repo/fed_vit_autorl/safety/controllers_backup.py: unexpected character after line continuation character (<unknown>, line 240)",
-        "[INFO] Code documentation score: 89.8% (79/88 classes)",
-        "[INFO] Overall documentation score: 90.27%"
+        "[WARNING] Failed to analyze /root/repo/fed_vit_autorl/research/validation_runner.py: '(' was never closed (<unknown>, line 629)",
+        "[INFO] Code documentation score: 94.8% (219/231 classes)",
+        "[INFO] Overall documentation score: 91.77%"
       ]
     }
   ],
@@ -122,6 +106,6 @@
     "total_gates": 4,
     "passed_gates": 2,
     "failed_gates": 2,
-    "average_score": 0.8365781071900933
+    "average_score": 0.8720661298884805
   }
 }
