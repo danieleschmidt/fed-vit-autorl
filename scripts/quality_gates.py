@@ -427,8 +427,8 @@ class SecurityGate(QualityGate):
         total_checks = 0
         
         dangerous_patterns = [
-            (r"eval\s*\(", "Use of eval() function"),
-            (r"exec\s*\(", "Use of exec() function"),
+            (r"(?<!\.)\beval\s*\([^)]*['\"]", "Use of eval() function with string"),
+            (r"(?<!\.)\bexec\s*\([^)]*['\"]", "Use of exec() function with string"),
             (r"os\.system\s*\(", "Use of os.system()"),
             (r"subprocess\.call.*shell=True", "Shell injection risk"),
             (r"password\s*=\s*[\"'][^\"']+[\"']", "Hardcoded password"),

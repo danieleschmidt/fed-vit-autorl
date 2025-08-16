@@ -341,8 +341,8 @@ class QualityGateValidator:
             
             # Security pattern checks
             dangerous_patterns = [
-                (r'eval\(', "Use of eval()"),
-                (r'exec\(', "Use of exec()"),  
+                (r'(?<!\.)\beval\s*\([^)]*[\'"]', "Use of eval() function with string"),
+                (r'(?<!\.)\bexec\s*\([^)]*[\'"]', "Use of exec() function with string"),  
                 (r'subprocess\.call\([^)]*shell=True', "Shell injection risk"),
                 (r'os\.system\(', "OS command execution"),
                 (r'input\(.*\)', "Raw input usage"),

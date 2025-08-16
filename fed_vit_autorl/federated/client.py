@@ -11,6 +11,7 @@ import numpy as np
 
 from .privacy import DifferentialPrivacy
 from .communication import GradientCompressor
+from ..error_handling import with_error_handling, handle_error, ErrorCategory, ErrorSeverity, FederatedError
 
 
 logger = logging.getLogger(__name__)
@@ -71,16 +72,48 @@ class FederatedClient:
         
         logger.info(f"Initialized federated client {client_id}")
     
+    @with_error_handling(max_retries=2, auto_recover=True)
     def set_global_model(self, global_params: Dict[str, torch.Tensor]) -> None:
         """Update local model with global parameters.
         
         Args:
             global_params: Global model parameters from server
         """
-        # Load global parameters into local model
-        self.model.load_state_dict(global_params)
-        logger.debug(f"Client {self.client_id} updated with global model")
+        try:
+            # Validate parameters before loading
+            if not global_params:
+                raise FederatedError(
+                    "Empty global parameters received",
+                    category=ErrorCategory.VALIDATION,
+                    severity=ErrorSeverity.HIGH
+                )
+            
+            # Check parameter compatibility
+            model_params = dict(self.model.named_parameters())
+            for name in global_params:
+                if name not in model_params:
+                    raise FederatedError(
+                        f"Parameter {name} not found in local model",
+                        category=ErrorCategory.VALIDATION,
+                        severity=ErrorSeverity.HIGH
+                    )
+            
+            # Load global parameters into local model
+            self.model.load_state_dict(global_params)
+            logger.debug(f"Client {self.client_id} updated with global model")
+            
+        except Exception as e:
+            handle_error(
+                e,
+                context={
+                    'client_id': self.client_id,
+                    'operation': 'set_global_model',
+                    'params_count': len(global_params) if global_params else 0
+                }
+            )
+            raise
     
+    @with_error_handling(max_retries=1, auto_recover=True)
     def local_train(
         self,
         train_loader: torch.utils.data.DataLoader,
@@ -97,40 +130,111 @@ class FederatedClient:
         Returns:
             Training metrics and statistics
         """
-        if epochs is None:
-            epochs = self.local_epochs
+        try:
+            if epochs is None:
+                epochs = self.local_epochs
             
-        self.model.train()
-        epoch_losses = []
-        
-        # Store initial parameters
-        initial_params = {
-            name: param.clone().detach()
-            for name, param in self.model.named_parameters()
-        }
-        
-        # Local training loop
-        for epoch in range(epochs):
-            batch_losses = []
+            # Validate inputs
+            if epochs <= 0:
+                raise FederatedError(
+                    f"Invalid epochs value: {epochs}",
+                    category=ErrorCategory.VALIDATION,
+                    severity=ErrorSeverity.MEDIUM
+                )
             
-            for batch_idx, (data, target) in enumerate(train_loader):
-                data, target = data.to(self.device), target.to(self.device)
+            if not train_loader:
+                raise FederatedError(
+                    "Empty training data loader",
+                    category=ErrorCategory.VALIDATION,
+                    severity=ErrorSeverity.HIGH
+                )
                 
-                self.optimizer.zero_grad()
-                output = self.model(data)
-                loss = criterion(output, target)
-                loss.backward()
-                self.optimizer.step()
+            self.model.train()
+            epoch_losses = []
+            
+            # Store initial parameters
+            initial_params = {
+                name: param.clone().detach()
+                for name, param in self.model.named_parameters()
+            }
+            
+            # Local training loop
+            for epoch in range(epochs):
+                batch_losses = []
                 
-                batch_losses.append(loss.item())
+                try:
+                    for batch_idx, (data, target) in enumerate(train_loader):
+                        try:
+                            data, target = data.to(self.device), target.to(self.device)
+                            
+                            self.optimizer.zero_grad()
+                            output = self.model(data)
+                            loss = criterion(output, target)
+                            
+                            # Check for invalid loss
+                            if torch.isnan(loss) or torch.isinf(loss):
+                                raise FederatedError(
+                                    f"Invalid loss value: {loss.item()}",
+                                    category=ErrorCategory.COMPUTATION,
+                                    severity=ErrorSeverity.HIGH
+                                )
+                            
+                            loss.backward()
+                            self.optimizer.step()
+                            
+                            batch_losses.append(loss.item())
+                            
+                        except RuntimeError as e:
+                            if "out of memory" in str(e).lower():
+                                handle_error(
+                                    e,
+                                    context={
+                                        'client_id': self.client_id,
+                                        'epoch': epoch,
+                                        'batch_idx': batch_idx,
+                                        'operation': 'forward_backward'
+                                    }
+                                )
+                                # Skip this batch and continue
+                                continue
+                            else:
+                                raise
+                
+                except Exception as e:
+                    handle_error(
+                        e,
+                        context={
+                            'client_id': self.client_id,
+                            'epoch': epoch,
+                            'operation': 'epoch_training'
+                        }
+                    )
+                    # Continue with next epoch if possible
+                    if len(batch_losses) == 0:
+                        batch_losses = [float('inf')]  # Mark as failed epoch
+                
+                if batch_losses:
+                    epoch_loss = np.mean(batch_losses)
+                    epoch_losses.append(epoch_loss)
+                    
+                    logger.debug(
+                        f"Client {self.client_id} Epoch {epoch+1}/{epochs}: "
+                        f"Loss = {epoch_loss:.6f}"
+                    )
+                else:
+                    logger.warning(f"No valid batches in epoch {epoch+1}")
+                    epoch_losses.append(float('inf'))
             
-            epoch_loss = np.mean(batch_losses)
-            epoch_losses.append(epoch_loss)
-            
-            logger.debug(
-                f"Client {self.client_id} Epoch {epoch+1}/{epochs}: "
-                f"Loss = {epoch_loss:.6f}"
+        except Exception as e:
+            handle_error(
+                e,
+                context={
+                    'client_id': self.client_id,
+                    'operation': 'local_train',
+                    'epochs': epochs
+                }
             )
+            raise
         
         # Calculate parameter update
         final_params = {

@@ -610,7 +610,7 @@ class ResearchValidationRunner:
                     f"- **{improvement['novel_algorithm']}** vs {improvement['baseline_algorithm']} "
                     f"({improvement['metric']}): p = {improvement['p_value']:.6f}, "
                     f"Cohen's d = {improvement['effect_size']:.3f} ({effect_interp} effect), "
-                    f"Δ = +{improvement['mean_improvement']:.3f}"
+                    f"Delta = +{improvement['mean_improvement']:.3f}"
                 )
         else:
             report_lines.append("- No statistically significant improvements found")
