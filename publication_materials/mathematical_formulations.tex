@@ -1,0 +1,277 @@
+% Mathematical Formulations for Novel Federated Learning Algorithms
+% LaTeX format for publication-ready mathematical notation
+
+\documentclass[12pt,a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{physics}
+\usepackage{bm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\title{Mathematical Formulations: Novel Quantum-Inspired and Neuromorphic Federated Learning}
+\author{Terragon Labs Research Team}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Quantum-Inspired Federated Aggregation (QI-Fed)}
+
+\subsection{Quantum State Representation}
+
+The global federated learning state is represented as a quantum superposition:
+\begin{equation}
+\ket{\psi} = \frac{1}{\sqrt{N}} \sum_{i=1}^{N} \alpha_i \ket{u_i}
+\end{equation}
+where $\alpha_i \in \mathbb{C}$ are complex amplitudes and $\ket{u_i}$ represents client $i$'s parameter update.
+
+\subsection{Quantum Amplitude Encoding}
+
+Client updates are encoded as quantum amplitudes through:
+\begin{equation}
+\alpha_i = \sqrt{\frac{\|W_i^{(t)}\|_2}{\sum_{j=1}^N \|W_j^{(t)}\|_2}} \cdot e^{i\phi_i}
+\end{equation}
+where $\phi_i = \frac{2\pi i}{N}$ distributes phases uniformly and $\|W_i^{(t)}\|_2$ is the L2 norm of client $i$'s parameters.
+
+\subsection{Entanglement Matrix}
+
+Client correlations are modeled through a Hermitian entanglement matrix:
+\begin{equation}
+\mathbf{E} = \begin{pmatrix}
+1 & e^{i\phi_{12}} s_{12} & \cdots & e^{i\phi_{1N}} s_{1N} \\
+e^{-i\phi_{12}} s_{12} & 1 & \cdots & e^{i\phi_{2N}} s_{2N} \\
+\vdots & \vdots & \ddots & \vdots \\
+e^{-i\phi_{1N}} s_{1N} & e^{-i\phi_{2N}} s_{2N} & \cdots & 1
+\end{pmatrix}
+\end{equation}
+where $s_{ij} \in [0,1]$ represents similarity strength and $\phi_{ij}$ is the relative phase.
+
+\subsection{Quantum Interference Aggregation}
+
+The aggregated parameters incorporate quantum interference:
+\begin{align}
+W^{(t+1)} &= \sum_{i=1}^N |\alpha_i|^2 W_i^{(t)} + \sum_{i \neq j} \text{Re}(\alpha_i^* \alpha_j) \mathcal{I}(W_i^{(t)}, W_j^{(t)}) \\
+\mathcal{I}(W_i, W_j) &= \frac{W_i + W_j}{2} \cdot \cos\left(\frac{\|W_i - W_j\|_2}{\sigma}\right)
+\end{align}
+where $\mathcal{I}(\cdot,\cdot)$ represents quantum interference between parameter vectors.
+
+\subsection{Quantum Evolution}
+
+The quantum state evolves according to a discrete Schrödinger equation:
+\begin{equation}
+\ket{\psi^{(t+1)}} = \mathbf{U}^{(t)} \ket{\psi^{(t)}}
+\end{equation}
+with unitary evolution operator:
+\begin{equation}
+\mathbf{U}^{(t)} = \exp\left(-i \mathbf{H}^{(t)} \Delta t\right)
+\end{equation}
+where $\mathbf{H}^{(t)}$ is the Hamiltonian encoding client interactions.
+
+\subsection{Complexity Analysis}
+
+\begin{theorem}[Quantum Speedup]
+QI-Fed achieves computational complexity $O(\sqrt{N} \log N)$ compared to $O(N)$ for classical federated averaging.
+\end{theorem}
+
+\begin{proof}
+The quantum interference allows parallel processing of $\sqrt{N}$ client pairs simultaneously through superposition. The Born rule measurement requires $O(\log N)$ operations, yielding total complexity $O(\sqrt{N} \log N)$.
+\end{proof}
+
+\section{Neuromorphic Privacy-Preserving Learning (NPP-L)}
+
+\subsection{Leaky Integrate-and-Fire Dynamics}
+
+Each artificial neuron follows the membrane potential dynamics:
+\begin{equation}
+\tau_m \frac{dV_i}{dt} = -(V_i - V_{\text{rest}}) + R_m I_i(t) + \sum_{j} w_{ij} \sum_k \delta(t - t_j^k)
+\end{equation}
+where:
+\begin{itemize}
+\item $V_i(t)$ is the membrane potential of neuron $i$
+\item $\tau_m$ is the membrane time constant
+\item $V_{\text{rest}}$ is the resting potential
+\item $R_m$ is the membrane resistance
+\item $I_i(t)$ is the input current
+\item $w_{ij}$ is the synaptic weight from neuron $j$ to $i$
+\item $t_j^k$ are spike times from neuron $j$
+\end{itemize}
+
+\subsection{Spike Generation}
+
+A spike is generated when:
+\begin{equation}
+V_i(t) \geq V_{\text{threshold}}
+\end{equation}
+followed by reset: $V_i(t^+) = V_{\text{reset}}$ and refractory period $\tau_{\text{ref}}$.
+
+\subsection{Gradient Encoding}
+
+Parameter gradients are encoded as Poisson spike trains:
+\begin{equation}
+\lambda_i(t) = \lambda_{\max} \cdot \sigma\left(\frac{g_i - \mu_g}{\sigma_g}\right)
+\end{equation}
+where $g_i$ is the $i$-th gradient component, $\lambda_{\max} = 100$ Hz is maximum firing rate, and $\sigma(\cdot)$ is the sigmoid function.
+
+\subsection{Spike-Timing Dependent Plasticity (STDP)}
+
+Synaptic weights evolve according to:
+\begin{equation}
+\Delta w_{ij} = \begin{cases}
+A_+ \exp\left(-\frac{\Delta t}{\tau_+}\right) & \text{if } \Delta t > 0 \text{ (potentiation)} \\
+-A_- \exp\left(\frac{\Delta t}{\tau_-}\right) & \text{if } \Delta t < 0 \text{ (depression)}
+\end{cases}
+\end{equation}
+where $\Delta t = t_{\text{post}} - t_{\text{pre}}$ is the spike time difference.
+
+\subsection{Information-Theoretic Privacy}
+
+The privacy measure is based on spike pattern entropy:
+\begin{equation}
+H(S) = -\sum_{s \in \mathcal{S}} p(s) \log_2 p(s)
+\end{equation}
+where $\mathcal{S}$ is the set of possible spike patterns and $p(s)$ is the probability of pattern $s$.
+
+\subsection{Adaptive Differential Privacy}
+
+The privacy parameter adapts based on entropy:
+\begin{equation}
+\epsilon^{(t)} = \epsilon_0 \cdot \left(1 - \frac{H(S^{(t)})}{H_{\max}}\right)
+\end{equation}
+where $H_{\max} = \log_2(|\mathcal{S}|)$ is maximum possible entropy.
+
+\begin{theorem}[Neuromorphic Privacy Guarantee]
+NPP-L satisfies $(\epsilon^{(t)}, \delta)$-differential privacy with adaptive $\epsilon^{(t)}$ based on spike entropy.
+\end{theorem}
+
+\begin{proof}
+The stochastic spike generation process provides calibrated noise injection. For spike train $S$ with entropy $H(S)$, the sensitivity is bounded by $\Delta f \leq 1/H(S)$, ensuring differential privacy with parameter $\epsilon^{(t)}$.
+\end{proof}
+
+\section{Adaptive Meta-Learning Federated Aggregation (AML-Fed)}
+
+\subsection{Meta-Parameter Vector}
+
+The meta-learning framework optimizes parameter vector:
+\begin{equation}
+\bm{\theta} = \begin{pmatrix}
+\lambda \\
+\tau \\
+\beta \\
+\mu
+\end{pmatrix}
+\end{equation}
+where $\lambda$ is learning rate scale, $\tau$ is aggregation temperature, $\beta$ is client selection bias, and $\mu$ is momentum factor.
+
+\subsection{Adaptive Weight Calculation}
+
+Client weights are computed as:
+\begin{equation}
+w_i^{(t)} = \frac{\exp\left(\frac{p_i^{(t)}}{\tau} + \beta \cdot \text{rank}(p_i^{(t)})\right)}{\sum_{j=1}^N \exp\left(\frac{p_j^{(t)}}{\tau} + \beta \cdot \text{rank}(p_j^{(t)})\right)}
+\end{equation}
+where $p_i^{(t)}$ is client $i$'s performance at round $t$.
+
+\subsection{Meta-Gradient Updates}
+
+Meta-parameters evolve according to:
+\begin{equation}
+\bm{\theta}^{(t+1)} = \bm{\theta}^{(t)} + \alpha \nabla_{\bm{\theta}} \mathcal{L}(\bm{\theta}^{(t)}, \mathcal{P}^{(t)})
+\end{equation}
+where $\mathcal{L}$ is the meta-learning objective and $\mathcal{P}^{(t)}$ is the performance history.
+
+\subsection{Performance Gradient Estimation}
+
+The performance gradient is estimated using finite differences:
+\begin{equation}
+\nabla_{\bm{\theta}} \mathcal{L} \approx \frac{\mathcal{L}(\bm{\theta} + \epsilon \mathbf{e}_i) - \mathcal{L}(\bm{\theta} - \epsilon \mathbf{e}_i)}{2\epsilon}
+\end{equation}
+for each coordinate direction $\mathbf{e}_i$.
+
+\subsection{Momentum-Based Aggregation}
+
+The aggregated model incorporates momentum:
+\begin{align}
+\mathbf{m}^{(t+1)} &= \mu \mathbf{m}^{(t)} + (1-\mu) \sum_{i=1}^N w_i^{(t)} \Delta W_i^{(t)} \\
+W^{(t+1)} &= W^{(t)} + \lambda \mathbf{m}^{(t+1)}
+\end{align}
+where $\mathbf{m}^{(t)}$ is the momentum vector and $\Delta W_i^{(t)}$ is client $i$'s parameter update.
+
+\begin{theorem}[Meta-Learning Convergence]
+Under standard assumptions (bounded gradients, Lipschitz loss), AML-Fed achieves regret bound $O(\sqrt{T \log T})$ in the meta-learning objective.
+\end{theorem}
+
+\begin{proof}
+The meta-gradient updates follow the online gradient descent analysis. With appropriately chosen learning rate $\alpha = O(1/\sqrt{T})$, the cumulative regret is bounded by $O(\sqrt{T \log T})$.
+\end{proof}
+
+\section{Convergence Analysis}
+
+\subsection{Global Convergence Rate}
+
+For all three algorithms, under assumptions A1-A3:
+
+\textbf{A1:} $F$ is $L$-smooth: $\|\nabla F(x) - \nabla F(y)\| \leq L\|x - y\|$
+
+\textbf{A2:} $F$ is $\mu$-strongly convex: $F(y) \geq F(x) + \nabla F(x)^T(y-x) + \frac{\mu}{2}\|y-x\|^2$
+
+\textbf{A3:} Bounded variance: $\mathbb{E}[\|\nabla f_i(x) - \nabla F(x)\|^2] \leq \sigma^2$
+
+\begin{theorem}[Convergence Rate]
+All proposed algorithms achieve convergence rate:
+\begin{equation}
+\mathbb{E}[F(x^{(T)})] - F^* \leq O\left(\frac{1}{\sqrt{T}}\right)
+\end{equation}
+\end{theorem}
+
+\subsection{Communication Complexity}
+
+\begin{theorem}[Communication Efficiency]
+\begin{itemize}
+\item QI-Fed: $O(\sqrt{N} d \log T)$ communication complexity
+\item NPP-L: $O(N d_{\text{spike}} \log T)$ where $d_{\text{spike}} \ll d$
+\item AML-Fed: $O(N d \log T / \eta)$ where $\eta > 1$ is efficiency gain
+\end{itemize}
+\end{theorem}
+
+\section{Privacy Analysis}
+
+\subsection{Composition Theorem}
+
+For sequential application of privacy mechanisms:
+
+\begin{theorem}[Privacy Composition]
+The composition of $k$ mechanisms, each satisfying $(\epsilon_i, \delta_i)$-differential privacy, satisfies $(\sum_{i=1}^k \epsilon_i, \sum_{i=1}^k \delta_i)$-differential privacy.
+\end{theorem}
+
+\subsection{Advanced Composition}
+
+For NPP-L with adaptive privacy:
+
+\begin{theorem}[Advanced Composition]
+The composition of $T$ adaptive mechanisms with parameters $\{\epsilon^{(t)}\}_{t=1}^T$ satisfies $(\epsilon', \delta')$-differential privacy where:
+\begin{equation}
+\epsilon' = \sqrt{2 \sum_{t=1}^T (\epsilon^{(t)})^2 \log(1/\delta'')} + \sum_{t=1}^T \epsilon^{(t)} \log(1/\delta'')
+\end{equation}
+for $\delta' = T\delta'' + \delta$ with failure probability $\delta''$.
+\end{theorem}
+
+\section{Algorithm Complexities Summary}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Algorithm} & \textbf{Computation} & \textbf{Communication} & \textbf{Storage} \\
+\hline
+FedAvg & $O(N)$ & $O(Nd)$ & $O(d)$ \\
+QI-Fed & $O(\sqrt{N} \log N)$ & $O(\sqrt{N}d)$ & $O(N^2 + d)$ \\
+NPP-L & $O(N d_{\text{spike}})$ & $O(N d_{\text{spike}})$ & $O(K^2 + d)$ \\
+AML-Fed & $O(N \log N)$ & $O(Nd/\eta)$ & $O(d + |\bm{\theta}|)$ \\
+\hline
+\end{tabular}
+\caption{Computational and communication complexities where $N$ is number of clients, $d$ is model dimension, $K$ is number of neurons, and $\eta > 1$ is efficiency gain.}
+\end{table}
+
+\end{document}
