@@ -12,7 +12,7 @@ from .self_improving_system import (
 
 __all__ = [
     "AutonomousOptimizer",
-    "SelfHealingSystem", 
+    "SelfHealingSystem",
     "PerformancePredictor",
     "AutoNAS",
     "HyperparameterOptimizer",

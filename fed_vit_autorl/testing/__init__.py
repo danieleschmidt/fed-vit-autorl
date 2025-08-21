@@ -29,13 +29,13 @@ except ImportError:
 
 __all__ = [
     "TestRunner",
-    "TestSuite", 
+    "TestSuite",
     "TestResult",
     "QualityGateValidator",
     "QualityMetrics",
     "PerformanceTester",
     "BenchmarkSuite",
-    "IntegrationTester", 
+    "IntegrationTester",
     "FederatedTestHarness",
     "SecurityTester",
     "VulnerabilityScanner",

@@ -19,12 +19,12 @@ try:
     _TORCH_COMPONENTS_AVAILABLE = True
 except ImportError:
     _TORCH_COMPONENTS_AVAILABLE = False
-    
+
     # Placeholder classes for torch-dependent components
     class _TorchDependentPlaceholder:
         def __init__(self, *args, **kwargs):
             raise ImportError("This component requires torch. Install with: pip install torch")
-    
+
     ModelOptimizer = _TorchDependentPlaceholder
     DistributedTrainingManager = _TorchDependentPlaceholder
     MemoryManager = _TorchDependentPlaceholder
@@ -36,13 +36,13 @@ except ImportError:
 __all__ = [
     # Always available
     "AdaptiveCache",
-    "CacheManager", 
+    "CacheManager",
     "cached",
     "ResourceOptimizer",
     "PredictiveScaler",
     "AdvancedLoadBalancer",
     "BalancingAlgorithm",
-    
+
     # May require torch
     "ModelOptimizer",
     "DistributedTrainingManager",

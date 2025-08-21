@@ -15,15 +15,15 @@ from typing import Dict, List, Any
 
 def generate_publication_materials():
     """Generate complete publication package."""
-    
+
     print("\\n" + "=" * 60)
     print("                TERRAGON PUBLICATION GENERATOR")
     print("=" * 60)
-    
+
     # Create output directory
     output_dir = Path("./publication_materials")
     output_dir.mkdir(exist_ok=True)
-    
+
     # Load research results
     try:
         with open("./research_validation_results/detailed_results.json", "r") as f:
@@ -31,21 +31,21 @@ def generate_publication_materials():
     except FileNotFoundError:
         print("Research results not found. Please run validation first.")
         return
-    
+
     print("\\nGenerating publication materials...")
-    
+
     # Generate IEEE paper abstract
     ieee_abstract = generate_ieee_abstract(research_results)
-    
+
     # Generate conference submission
     conference_submission = generate_conference_submission(research_results)
-    
+
     # Generate presentation outline
     presentation_outline = generate_presentation_outline(research_results)
-    
+
     # Generate submission checklist
     submission_checklist = generate_submission_checklist(research_results)
-    
+
     # Save all materials
     materials = {
         "ieee_abstract.md": ieee_abstract,
@@ -53,43 +53,43 @@ def generate_publication_materials():
         "presentation_outline.md": presentation_outline,
         "submission_checklist.md": submission_checklist
     }
-    
+
     for filename, content in materials.items():
         with open(output_dir / filename, "w") as f:
             f.write(content)
         print(f"   Generated: {filename}")
-    
+
     print("\\n" + "=" * 60)
     print("                PUBLICATION PACKAGE COMPLETE")
     print("=" * 60)
-    
+
     # Print summary
     improvements = research_results.get("significant_improvements", [])
     print(f"\\nKEY RESEARCH HIGHLIGHTS:")
     print(f"   Total Significant Improvements: {len(improvements)}")
-    
+
     if improvements:
         best = max(improvements, key=lambda x: x["improvement"])
         print(f"   Best Improvement: {best['novel_algorithm']} vs {best['baseline_algorithm']}")
         print(f"   Metric: {best['metric']}")
         print(f"   Improvement: +{best['improvement']:.3f}")
-    
+
     print(f"\\nPUBLICATION READINESS:")
     print(f"   Sample Size: Adequate (n=30)")
     print(f"   Statistical Power: High")
     print(f"   Effect Sizes: Large")
     print(f"   Reproducibility: Complete")
-    
+
     print(f"\\nAll materials saved to: {output_dir}")
     print("\\nReady for high-impact venue submission!")
-    
+
     return str(output_dir)
 
 def generate_ieee_abstract(research_results: Dict[str, Any]) -> str:
     """Generate IEEE format abstract."""
-    
+
     improvements = research_results.get("significant_improvements", [])
-    
+
     abstract = f"""# Novel Federated Learning Algorithms for Autonomous Vehicle Perception: A Comprehensive Evaluation
 
 ## IEEE Format Abstract
@@ -125,7 +125,7 @@ Based on comprehensive evaluation across Cityscapes, nuScenes, KITTI, and BDD100
 - **Communication Efficiency**: 82.1% (14.4% improvement)
 - **Best overall performance in accuracy and IoU metrics**
 
-### Adaptive Privacy-Performance ViT (APP-ViT)  
+### Adaptive Privacy-Performance ViT (APP-ViT)
 - **Privacy Preservation**: 90.2% (40.2% improvement over FedAvg)
 - **Maintains competitive accuracy**: 84.0%
 - **Demonstrates effective privacy-utility optimization**
@@ -149,15 +149,15 @@ This work establishes new benchmarks for federated learning in autonomous system
 ---
 *Abstract generated on {time.strftime('%Y-%m-%d %H:%M:%S')} by Terragon Labs*
 """
-    
+
     return abstract
 
 def generate_conference_submission(research_results: Dict[str, Any]) -> str:
     """Generate conference submission summary."""
-    
+
     improvements = research_results.get("significant_improvements", [])
     stats = research_results.get("summary_statistics", {})
-    
+
     submission = f"""# Conference Submission: Novel Federated Learning for Autonomous Vehicles
 
 ## Submission Summary
@@ -173,7 +173,7 @@ def generate_conference_submission(research_results: Dict[str, Any]) -> str:
 Existing federated learning approaches for autonomous vehicles have three critical limitations:
 
 1. **Single-Modality Processing**: Cannot leverage multi-sensor data (RGB, LiDAR, Radar)
-2. **Fixed Privacy Budgets**: Do not adapt to scenario criticality 
+2. **Fixed Privacy Budgets**: Do not adapt to scenario criticality
 3. **No Cross-Domain Transfer**: Cannot transfer knowledge across regions/conditions
 
 ## Our Solution
@@ -185,7 +185,7 @@ We introduce three novel algorithms that comprehensively address these limitatio
 - **Technical Approach**: Cross-attention fusion + regional aggregation
 - **Key Result**: 12% accuracy improvement, 14.4% communication efficiency gain
 
-### 2. Adaptive Privacy-Performance ViT (APP-ViT)  
+### 2. Adaptive Privacy-Performance ViT (APP-ViT)
 - **Innovation**: Scenario-aware dynamic privacy budgets
 - **Technical Approach**: Complexity estimation + adaptive differential privacy
 - **Key Result**: 40.2% privacy preservation improvement while maintaining accuracy
@@ -211,12 +211,12 @@ We introduce three novel algorithms that comprehensively address these limitatio
 
 ### Performance Summary
 """
-    
+
     # Add performance table
     if stats:
         submission += "\\n| Algorithm | Accuracy | F1-Score | IoU | Comm. Eff. | Privacy |\\n"
         submission += "|-----------|----------|----------|-----|------------|---------|\\n"
-        
+
         for alg in ["mh_fed", "app_vit", "cd_ft", "fedavg", "fedprox", "fixed_dp"]:
             if alg in stats:
                 acc = f"{stats[alg]['accuracy']['mean']:.3f}"
@@ -224,13 +224,13 @@ We introduce three novel algorithms that comprehensively address these limitatio
                 iou = f"{stats[alg]['iou']['mean']:.3f}"
                 comm = f"{stats[alg]['communication_efficiency']['mean']:.3f}"
                 priv = f"{stats[alg]['privacy_preservation']['mean']:.3f}"
-                
+
                 alg_name = alg.replace('_', '-').upper() if alg in ["mh_fed", "app_vit", "cd_ft"] else alg.replace('_', '-').title()
                 if alg in ["mh_fed", "app_vit", "cd_ft"]:
                     alg_name = f"**{alg_name}**"
-                
+
                 submission += f"| {alg_name} | {acc} | {f1} | {iou} | {comm} | {priv} |\\n"
-    
+
     submission += f"""
 
 ## Significance and Impact
@@ -258,7 +258,7 @@ We introduce three novel algorithms that comprehensively address these limitatio
 Compared to recent work in federated learning for autonomous vehicles:
 
 - **FedLane (2024)**: Limited to single-modal lane segmentation
-- **FedBevT (2024)**: Single-modal bird's eye view perception  
+- **FedBevT (2024)**: Single-modal bird's eye view perception
 - **pFedLVM (2025)**: Uses large vision models but no multi-modal fusion
 
 Our approach is the **first to comprehensively address** multi-modal fusion, adaptive privacy, and cross-domain transfer in a unified framework.
@@ -287,14 +287,14 @@ Our approach is the **first to comprehensively address** multi-modal fusion, ada
 - **ICCV**: Computer vision applications in autonomous systems
 - **CVPR**: Vision-based autonomous driving applications
 
-### Specialized Venues  
+### Specialized Venues
 - **IEEE TIV**: Transactions on Intelligent Vehicles
 - **ACM TCPS**: Transactions on Cyber-Physical Systems
 - **IEEE TMC**: Transactions on Mobile Computing
 
 ### Workshop Tracks
 - **ICCV Workshop on Autonomous Driving**
-- **NeurIPS Workshop on Federated Learning** 
+- **NeurIPS Workshop on Federated Learning**
 - **CVPR Workshop on Vision for All Seasons**
 
 ## Submission Strategy
@@ -307,12 +307,12 @@ Our approach is the **first to comprehensively address** multi-modal fusion, ada
 ---
 *Submission summary generated on {time.strftime('%Y-%m-%d %H:%M:%S')} by Terragon Labs*
 """
-    
+
     return submission
 
 def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
     """Generate presentation outline."""
-    
+
     outline = f"""# Presentation Outline: Novel Federated Learning for Autonomous Vehicles
 
 ## Slide Structure (15-20 minutes + 5 minutes Q&A)
@@ -333,7 +333,7 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 
 #### Slide 3: Three Critical Gaps
 1. **Single-Modality Processing**: Can't use RGB + LiDAR + Radar together
-2. **Fixed Privacy Budgets**: Same privacy for highway vs. emergency scenarios  
+2. **Fixed Privacy Budgets**: Same privacy for highway vs. emergency scenarios
 3. **No Cross-Domain Transfer**: Can't share knowledge between cities/weather
 
 #### Slide 4: Our Approach
@@ -352,10 +352,10 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 #### Slide 6: MH-Fed Architecture
 [Diagram showing hierarchical federation structure]
 - Level 1: Edge multi-modal fusion
-- Level 2: Regional aggregation  
+- Level 2: Regional aggregation
 - Level 3: Global model update
 
-#### Slide 7: Adaptive Privacy-Performance ViT (APP-ViT)  
+#### Slide 7: Adaptive Privacy-Performance ViT (APP-ViT)
 - **Problem**: Fixed privacy budgets are suboptimal
 - **Solution**: Scenario-aware adaptive privacy
 - **Innovation**: Complexity estimation + dynamic epsilon
@@ -369,7 +369,7 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 
 #### Slide 9: Cross-Domain Federated Transfer (CD-FT)
 - **Problem**: No knowledge transfer across domains
-- **Solution**: Domain-adversarial federated learning  
+- **Solution**: Domain-adversarial federated learning
 - **Innovation**: Cross-domain similarity + adversarial training
 - **Result**: Balanced improvements across all metrics
 
@@ -392,7 +392,7 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 - Clear superiority of novel algorithms
 - Consistent improvements across metrics
 
-#### Slide 13: Statistical Validation  
+#### Slide 13: Statistical Validation
 - **{len(research_results.get('significant_improvements', []))} statistically significant improvements**
 - **Large effect sizes** (Cohen's d > 0.8)
 - **Adequate statistical power**
@@ -408,7 +408,7 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 
 #### Slide 15: Impact & Applications
 - **Technical Impact**: New federated learning paradigms
-- **Practical Impact**: Ready for autonomous vehicle deployment  
+- **Practical Impact**: Ready for autonomous vehicle deployment
 - **Research Impact**: Benchmark and open-source framework
 - **Societal Impact**: Privacy-preserving collaborative learning
 
@@ -429,7 +429,7 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 
 ### Delivery Guidelines
 - **Clear Problem Motivation**: Start with why this matters
-- **Technical Depth**: Balance detail with accessibility  
+- **Technical Depth**: Balance detail with accessibility
 - **Visual Aids**: Use diagrams to explain complex concepts
 - **Results Focus**: Emphasize statistical significance and effect sizes
 - **Practical Relevance**: Connect to real-world deployment
@@ -443,10 +443,10 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 ### Anticipated Questions
 - **Q**: How does this work with real vehicle networks?
 - **A**: Designed for vehicular communication constraints
-  
+
 - **Q**: What about computational overhead on edge devices?
 - **A**: Hierarchical design minimizes edge computation
-  
+
 - **Q**: How do you handle malicious participants?
 - **A**: Future work will address Byzantine robustness
 
@@ -462,14 +462,14 @@ def generate_presentation_outline(research_results: Dict[str, Any]) -> str:
 ---
 *Presentation outline generated on {time.strftime('%Y-%m-%d %H:%M:%S')} by Terragon Labs*
 """
-    
+
     return outline
 
 def generate_submission_checklist(research_results: Dict[str, Any]) -> str:
     """Generate submission checklist."""
-    
+
     improvements = research_results.get("significant_improvements", [])
-    
+
     checklist = f"""# Publication Submission Checklist
 
 ## Research Quality Assessment
@@ -527,7 +527,7 @@ def generate_submission_checklist(research_results: Dict[str, Any]) -> str:
 - [x] **Code Availability**: Implementation will be released
 - [x] **Supplementary Material**: Additional details prepared
 
-### For IEEE TIV Submission  
+### For IEEE TIV Submission
 - [x] **Journal Format**: Extended paper format
 - [x] **IEEE Style**: Proper IEEE formatting
 - [x] **Copyright Forms**: Prepared for submission
@@ -575,7 +575,7 @@ def generate_submission_checklist(research_results: Dict[str, Any]) -> str:
 
 ### Publication Impact Indicators
 - **Statistical Significance**: {len(improvements)} significant improvements ✅
-- **Effect Size**: Large practical significance ✅  
+- **Effect Size**: Large practical significance ✅
 - **Sample Size**: Adequate for statistical validity ✅
 - **Reproducibility**: Complete methodology provided ✅
 - **Novel Contribution**: Clear algorithmic innovations ✅
@@ -613,13 +613,13 @@ def generate_submission_checklist(research_results: Dict[str, Any]) -> str:
 
 **Final Assessment**: This research demonstrates exceptional quality across all dimensions and is recommended for submission to the highest-impact venues in the field.
 """
-    
+
     return checklist
 
 if __name__ == "__main__":
     # Generate complete publication package
     package_dir = generate_publication_materials()
-    
+
     print(f"\\nPublication materials generated successfully!")
     print(f"Location: {package_dir}")
     print("\\nNext steps:")

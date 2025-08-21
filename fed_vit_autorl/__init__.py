@@ -25,12 +25,12 @@ except ImportError as e:
     _TORCH_AVAILABLE = False
     import warnings
     warnings.warn(f"Some components unavailable due to missing dependencies: {e}")
-    
+
     # Define placeholder classes
     class _MissingDependency:
         def __init__(self, *args, **kwargs):
             raise ImportError("This component requires additional dependencies. Install with: pip install fed-vit-autorl[full]")
-    
+
     ViTPerception = _MissingDependency
     FederatedClient = _MissingDependency
     VehicleClient = _MissingDependency
@@ -44,25 +44,25 @@ except ImportError as e:
 if _TORCH_AVAILABLE:
     class FederatedVehicleRL:
         """Main API for Federated Vehicle Reinforcement Learning."""
-        
-        def __init__(self, model, num_vehicles=100, aggregation="fedavg", 
+
+        def __init__(self, model, num_vehicles=100, aggregation="fedavg",
                      privacy_mechanism="differential_privacy", epsilon=1.0):
             self.model = model
             self.num_vehicles = num_vehicles
             self.aggregation = aggregation
             self.privacy_mechanism = privacy_mechanism
             self.epsilon = epsilon
-            
+
             # Initialize federated server
             self.server = FederatedServer(
                 global_model=model,
                 num_clients=num_vehicles,
                 aggregation_method=aggregation
             )
-            
+
             # Store client models
             self.clients = {}
-        
+
         def get_vehicle_model(self, vehicle_id):
             """Get model for specific vehicle."""
             if vehicle_id not in self.clients:
@@ -70,7 +70,7 @@ if _TORCH_AVAILABLE:
                 import copy
                 model_copy = copy.deepcopy(self.model)
                 optimizer = optim.Adam(model_copy.parameters(), lr=1e-4)
-                
+
                 self.clients[vehicle_id] = VehicleClient(
                     vehicle_id=str(vehicle_id),
                     model=model_copy,
@@ -78,7 +78,7 @@ if _TORCH_AVAILABLE:
                     privacy_budget=self.epsilon
                 )
             return self.clients[vehicle_id]
-        
+
         def aggregate_updates(self, local_updates, weighted_by="uniform"):
             """Aggregate updates from vehicles."""
             # Process updates for server
@@ -88,16 +88,16 @@ if _TORCH_AVAILABLE:
                     processed_updates.append(update.get_model_update())
                 else:
                     processed_updates.append(update)
-            
+
             # Perform aggregation
             global_update = self.server.aggregate_updates(processed_updates)
-            
+
             # Update all client models
             for client in self.clients.values():
                 client.set_global_model(global_update)
-            
+
             return global_update
-        
+
         def evaluate_global_model(self, test_scenarios):
             """Evaluate global model performance."""
             return {
@@ -143,7 +143,7 @@ except ImportError:
 
 __all__ = [
     "__version__",
-    "ViTPerception", 
+    "ViTPerception",
     "FederatedClient",
     "VehicleClient",
     "FederatedServer",
@@ -158,12 +158,12 @@ __all__ = [
 if _ADVANCED_COMPONENTS_AVAILABLE:
     __all__.extend([
         "AttentionBasedAggregator",
-        "HierarchicalFedAggregator", 
+        "HierarchicalFedAggregator",
         "AdversarialRobustAggregator",
         "MetaFedAggregator",
         "AdaptiveViT",
         "MultiModalPatchEmbedding",
-        "TemporalPatchEmbedding", 
+        "TemporalPatchEmbedding",
         "FederatedViTEnsemble",
         "AutonomousOptimizer",
         "SelfHealingSystem",
@@ -173,6 +173,6 @@ if _ADVANCED_COMPONENTS_AVAILABLE:
         "GlobalRegion",
         "GlobalClient",
         "ExperimentRunner",
-        "ExperimentConfig", 
+        "ExperimentConfig",
         "StatisticalValidator",
     ])

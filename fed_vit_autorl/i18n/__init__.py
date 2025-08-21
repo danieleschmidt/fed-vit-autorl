@@ -9,17 +9,17 @@ logger = logging.getLogger(__name__)
 
 class I18nManager:
     """Global internationalization manager."""
-    
+
     def __init__(self):
         self.current_locale = 'en'
         self.translations: Dict[str, Dict[str, str]] = {}
         self.fallback_locale = 'en'
         self._load_translations()
-    
+
     def _load_translations(self):
         """Load translation files."""
         translations_dir = os.path.join(os.path.dirname(__file__), 'translations')
-        
+
         # Default English translations
         self.translations['en'] = {
             'federated_learning': 'Federated Learning',
@@ -36,7 +36,7 @@ class I18nManager:
             'round_completed': 'Round Completed',
             'inference_ready': 'Inference Ready'
         }
-        
+
         # Spanish translations
         self.translations['es'] = {
             'federated_learning': 'Aprendizaje Federado',
@@ -53,8 +53,8 @@ class I18nManager:
             'round_completed': 'Ronda Completada',
             'inference_ready': 'Inferencia Lista'
         }
-        
-        # French translations  
+
+        # French translations
         self.translations['fr'] = {
             'federated_learning': 'Apprentissage Fédéré',
             'autonomous_vehicle': 'Véhicule Autonome',
@@ -70,11 +70,11 @@ class I18nManager:
             'round_completed': 'Tour Terminé',
             'inference_ready': 'Inférence Prête'
         }
-        
+
         # German translations
         self.translations['de'] = {
             'federated_learning': 'Föderiertes Lernen',
-            'autonomous_vehicle': 'Autonomes Fahrzeug', 
+            'autonomous_vehicle': 'Autonomes Fahrzeug',
             'vision_transformer': 'Vision Transformer',
             'privacy_preserved': 'Datenschutz Gewährleistet',
             'training_complete': 'Training Abgeschlossen',
@@ -87,7 +87,7 @@ class I18nManager:
             'round_completed': 'Runde Abgeschlossen',
             'inference_ready': 'Inferenz Bereit'
         }
-        
+
         # Japanese translations
         self.translations['ja'] = {
             'federated_learning': '連合学習',
@@ -101,10 +101,10 @@ class I18nManager:
             'security_validated': 'セキュリティ検証',
             'client_connected': 'クライアント接続',
             'aggregation_started': '集約開始',
-            'round_completed': 'ラウンド完了', 
+            'round_completed': 'ラウンド完了',
             'inference_ready': '推論準備完了'
         }
-        
+
         # Chinese translations
         self.translations['zh'] = {
             'federated_learning': '联邦学习',
@@ -121,9 +121,9 @@ class I18nManager:
             'round_completed': '轮次完成',
             'inference_ready': '推理就绪'
         }
-        
+
         logger.info(f"Loaded translations for {len(self.translations)} locales")
-    
+
     def set_locale(self, locale: str) -> bool:
         """Set current locale."""
         if locale in self.translations:
@@ -133,25 +133,25 @@ class I18nManager:
         else:
             logger.warning(f"Locale '{locale}' not supported, using fallback")
             return False
-    
+
     def t(self, key: str, locale: Optional[str] = None) -> str:
         """Translate a key to current or specified locale."""
         target_locale = locale or self.current_locale
-        
+
         if target_locale in self.translations:
             translations = self.translations[target_locale]
             if key in translations:
                 return translations[key]
-        
+
         # Fallback to default locale
         if self.fallback_locale in self.translations:
             fallback_translations = self.translations[self.fallback_locale]
             if key in fallback_translations:
                 return fallback_translations[key]
-        
+
         # Return key if no translation found
         return key
-    
+
     def get_supported_locales(self) -> list:
         """Get list of supported locales."""
         return list(self.translations.keys())
