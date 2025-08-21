@@ -8,7 +8,7 @@ from .policy_networks import ActorCriticNetwork, ContinuousActionPolicy
 
 __all__ = [
     "FederatedPPO",
-    "PPOPolicy", 
+    "PPOPolicy",
     "PPOValueFunction",
     "FederatedSAC",
     "SACPolicy",

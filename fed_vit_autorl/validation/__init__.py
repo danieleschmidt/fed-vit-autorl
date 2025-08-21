@@ -18,7 +18,7 @@ except ImportError:
 __all__ = [
     "InputValidator",
     "FederatedInputValidator",
-    "SecurityValidator", 
+    "SecurityValidator",
     "PrivacyValidator",
     "DataValidator",
     "ModelValidator",

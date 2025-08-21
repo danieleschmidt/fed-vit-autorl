@@ -11,7 +11,7 @@ def test_logging_config():
     print("Testing logging configuration...")
     try:
         from fed_vit_autorl.logging_config import StructuredFormatter
-        
+
         # Test structured formatter
         formatter = StructuredFormatter()
         print("✅ Logging configuration working!")
@@ -25,14 +25,14 @@ def test_error_handling():
     print("Testing error handling...")
     try:
         from fed_vit_autorl.error_handling import FederatedError, ErrorCategory, ErrorSeverity
-        
+
         # Test error creation
         error = FederatedError(
             "Test error",
             category=ErrorCategory.VALIDATION,
             severity=ErrorSeverity.HIGH
         )
-        
+
         assert error.category == ErrorCategory.VALIDATION
         print("✅ Error handling working!")
         return True
@@ -45,14 +45,14 @@ def test_validation():
     print("Testing validation...")
     try:
         from fed_vit_autorl.validation.input_validator import InputValidator
-        
+
         # Test validator creation
         validator = InputValidator(strict_mode=True)
-        
+
         # Simple string test
         result = validator.validate_string_input("test", max_length=10)
         assert result.is_valid == True
-        
+
         print("✅ Validation working!")
         return True
     except Exception as e:
@@ -64,7 +64,7 @@ def test_health_monitoring():
     print("Testing health monitoring...")
     try:
         from fed_vit_autorl.monitoring.health_checker import HealthCheck, HealthStatus
-        
+
         # Test health check creation
         health_check = HealthCheck(
             name="test_check",
@@ -73,7 +73,7 @@ def test_health_monitoring():
             timestamp=time.time(),
             metrics={"test": 1}
         )
-        
+
         assert health_check.status == HealthStatus.HEALTHY
         print("✅ Health monitoring working!")
         return True
@@ -84,17 +84,17 @@ def test_health_monitoring():
 def main():
     """Run simple Generation 2 tests."""
     print("🚀 Testing Fed-ViT-AutoRL Generation 2: Simple Robustness Test\\n")
-    
+
     tests = [
         test_logging_config,
-        test_error_handling, 
+        test_error_handling,
         test_validation,
         test_health_monitoring,
     ]
-    
+
     passed = 0
     total = len(tests)
-    
+
     for test in tests:
         try:
             if test():
@@ -102,9 +102,9 @@ def main():
             print()
         except Exception as e:
             print(f"❌ Test {test.__name__} crashed: {e}\\n")
-    
+
     print(f"📊 Test Results: {passed}/{total} tests passed")
-    
+
     if passed == total:
         print("🎉 Generation 2 robustness components are working!")
         return True

@@ -65,7 +65,7 @@ class DataProcessingRecord:
     transfers_to_third_countries: List[str] = field(default_factory=list)
     consent_timestamp: Optional[float] = None
     consent_withdrawn: bool = False
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for storage."""
         return {
@@ -98,12 +98,12 @@ class ConsentRecord:
     is_withdrawn: bool = False
     ip_address: str = ""
     user_agent: str = ""
-    
+
     def is_valid(self) -> bool:
         """Check if consent is still valid."""
         if self.is_withdrawn:
             return False
-        
+
         # Consent expires after 2 years under GDPR
         expiry_date = self.consent_timestamp + (2 * 365 * 24 * 60 * 60)
         return time.time() < expiry_date
@@ -129,7 +129,7 @@ class DataBreachIncident:
 
 class GDPRComplianceManager:
     """GDPR compliance management for federated learning systems."""
-    
+
     def __init__(
         self,
         controller_name: str,
@@ -138,7 +138,7 @@ class GDPRComplianceManager:
         data_retention_days: int = 1095,  # 3 years default
     ):
         """Initialize GDPR compliance manager.
-        
+
         Args:
             controller_name: Name of the data controller
             controller_contact: Contact information for the controller
@@ -149,21 +149,21 @@ class GDPRComplianceManager:
         self.controller_contact = controller_contact
         self.dpo_contact = dpo_contact
         self.data_retention_days = data_retention_days
-        
+
         # Storage for compliance records
         self.processing_records: Dict[str, DataProcessingRecord] = {}
         self.consent_records: Dict[str, ConsentRecord] = {}
         self.breach_incidents: Dict[str, DataBreachIncident] = {}
         self.data_subject_requests: Dict[str, Dict[str, Any]] = {}
-        
+
         # Thread safety
         self._lock = threading.RLock()
-        
+
         # Audit trail
         self.audit_log: List[Dict[str, Any]] = []
-        
+
         logger.info("GDPR compliance manager initialized")
-    
+
     @with_error_handling(max_retries=1, auto_recover=True)
     def record_consent(
         self,
@@ -175,7 +175,7 @@ class GDPRComplianceManager:
         user_agent: str = "",
     ) -> str:
         """Record data subject consent.
-        
+
         Args:
             data_subject_id: Unique identifier for the data subject
             purposes: List of processing purposes
@@ -183,7 +183,7 @@ class GDPRComplianceManager:
             consent_text: Text of the consent given
             ip_address: IP address of the consent
             user_agent: User agent string
-            
+
         Returns:
             Consent record ID
         """
@@ -196,9 +196,9 @@ class GDPRComplianceManager:
                 ip_address=ip_address,
                 user_agent=user_agent,
             )
-            
+
             self.consent_records[consent.id] = consent
-            
+
             # Log the consent
             self._add_audit_entry(
                 action="consent_recorded",
@@ -209,18 +209,18 @@ class GDPRComplianceManager:
                     'categories': [c.value for c in data_categories],
                 }
             )
-            
+
             logger.info(f"Consent recorded for data subject {data_subject_id}")
             return consent.id
-    
+
     @with_error_handling(max_retries=1, auto_recover=True)
     def withdraw_consent(self, data_subject_id: str, consent_id: Optional[str] = None) -> bool:
         """Withdraw consent for a data subject.
-        
+
         Args:
             data_subject_id: Data subject identifier
             consent_id: Specific consent to withdraw (optional)
-            
+
         Returns:
             True if successful
         """
@@ -232,16 +232,16 @@ class GDPRComplianceManager:
                     if consent.data_subject_id == data_subject_id:
                         consent.is_withdrawn = True
                         consent.withdrawal_timestamp = time.time()
-                        
+
                         self._add_audit_entry(
                             action="consent_withdrawn",
                             data_subject_id=data_subject_id,
                             details={'consent_id': consent_id}
                         )
-                        
+
                         # Stop any ongoing processing
                         self._stop_processing_for_subject(data_subject_id)
-                        
+
                         logger.info(f"Consent {consent_id} withdrawn for subject {data_subject_id}")
                         return True
             else:
@@ -252,20 +252,20 @@ class GDPRComplianceManager:
                         consent.is_withdrawn = True
                         consent.withdrawal_timestamp = time.time()
                         withdrawn_any = True
-                
+
                 if withdrawn_any:
                     self._add_audit_entry(
                         action="all_consent_withdrawn",
                         data_subject_id=data_subject_id,
                         details={}
                     )
-                    
+
                     self._stop_processing_for_subject(data_subject_id)
                     logger.info(f"All consent withdrawn for subject {data_subject_id}")
                     return True
-            
+
             return False
-    
+
     @with_error_handling(max_retries=1, auto_recover=True)
     def record_processing_activity(
         self,
@@ -276,14 +276,14 @@ class GDPRComplianceManager:
         processor_id: str = "",
     ) -> str:
         """Record a data processing activity.
-        
+
         Args:
             data_subject_id: Data subject identifier
             data_categories: Categories of data being processed
             purpose: Purpose of processing
             legal_basis: Legal basis for processing
             processor_id: ID of the processor
-            
+
         Returns:
             Processing record ID
         """
@@ -292,7 +292,7 @@ class GDPRComplianceManager:
             if purpose == ProcessingPurpose.CONSENT:
                 if not self._has_valid_consent(data_subject_id, purpose, data_categories):
                     raise ValueError(f"No valid consent for processing data subject {data_subject_id}")
-            
+
             record = DataProcessingRecord(
                 data_subject_id=data_subject_id,
                 data_categories=data_categories,
@@ -302,9 +302,9 @@ class GDPRComplianceManager:
                 controller_id=self.controller_name,
                 retention_period=self.data_retention_days,
             )
-            
+
             self.processing_records[record.id] = record
-            
+
             self._add_audit_entry(
                 action="processing_recorded",
                 data_subject_id=data_subject_id,
@@ -314,9 +314,9 @@ class GDPRComplianceManager:
                     'categories': [c.value for c in data_categories],
                 }
             )
-            
+
             return record.id
-    
+
     @with_error_handling(max_retries=1, auto_recover=True)
     def handle_data_subject_request(
         self,
@@ -325,12 +325,12 @@ class GDPRComplianceManager:
         details: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Handle a data subject rights request.
-        
+
         Args:
             data_subject_id: Data subject identifier
             request_type: Type of rights request
             details: Additional request details
-            
+
         Returns:
             Response data
         """
@@ -345,9 +345,9 @@ class GDPRComplianceManager:
                 'status': 'processing',
                 'response': None,
             }
-            
+
             self.data_subject_requests[request_id] = request_data
-            
+
             try:
                 if request_type == DataSubjectRights.ACCESS:
                     response = self._handle_access_request(data_subject_id)
@@ -365,10 +365,10 @@ class GDPRComplianceManager:
                     response = {'success': self.withdraw_consent(data_subject_id)}
                 else:
                     response = {'error': 'Unsupported request type'}
-                
+
                 request_data['status'] = 'completed'
                 request_data['response'] = response
-                
+
                 self._add_audit_entry(
                     action="data_subject_request",
                     data_subject_id=data_subject_id,
@@ -378,16 +378,16 @@ class GDPRComplianceManager:
                         'status': 'completed',
                     }
                 )
-                
+
                 return response
-                
+
             except Exception as e:
                 request_data['status'] = 'failed'
                 request_data['error'] = str(e)
-                
+
                 logger.error(f"Failed to handle data subject request: {e}")
                 return {'error': str(e)}
-    
+
     def _handle_access_request(self, data_subject_id: str) -> Dict[str, Any]:
         """Handle data access request."""
         # Collect all data for the subject
@@ -398,14 +398,14 @@ class GDPRComplianceManager:
             'data_categories': set(),
             'processing_purposes': set(),
         }
-        
+
         # Find processing records
         for record in self.processing_records.values():
             if record.data_subject_id == data_subject_id:
                 subject_data['processing_records'].append(record.to_dict())
                 subject_data['data_categories'].update([c.value for c in record.data_categories])
                 subject_data['processing_purposes'].add(record.processing_purpose.value)
-        
+
         # Find consent records
         for consent in self.consent_records.values():
             if consent.data_subject_id == data_subject_id:
@@ -417,18 +417,18 @@ class GDPRComplianceManager:
                     'is_withdrawn': consent.is_withdrawn,
                     'withdrawal_timestamp': consent.withdrawal_timestamp,
                 })
-        
+
         # Convert sets to lists for JSON serialization
         subject_data['data_categories'] = list(subject_data['data_categories'])
         subject_data['processing_purposes'] = list(subject_data['processing_purposes'])
-        
+
         return subject_data
-    
+
     def _handle_erasure_request(self, data_subject_id: str) -> Dict[str, Any]:
         """Handle data erasure request (right to be forgotten)."""
         # Check if we can legally erase the data
         cannot_erase = []
-        
+
         for record in self.processing_records.values():
             if record.data_subject_id == data_subject_id:
                 if record.processing_purpose in [
@@ -437,44 +437,44 @@ class GDPRComplianceManager:
                     ProcessingPurpose.VITAL_INTERESTS,
                 ]:
                     cannot_erase.append(record.id)
-        
+
         if cannot_erase:
             return {
                 'success': False,
                 'reason': 'Cannot erase data due to legal obligations',
                 'affected_records': cannot_erase,
             }
-        
+
         # Perform erasure
         erased_records = []
-        
+
         # Remove processing records
         to_remove = []
         for record_id, record in self.processing_records.items():
             if record.data_subject_id == data_subject_id:
                 to_remove.append(record_id)
                 erased_records.append(record_id)
-        
+
         for record_id in to_remove:
             del self.processing_records[record_id]
-        
+
         # Mark consent as withdrawn
         for consent in self.consent_records.values():
             if consent.data_subject_id == data_subject_id:
                 consent.is_withdrawn = True
                 consent.withdrawal_timestamp = time.time()
-        
+
         self._add_audit_entry(
             action="data_erased",
             data_subject_id=data_subject_id,
             details={'erased_records': erased_records}
         )
-        
+
         return {
             'success': True,
             'erased_records': erased_records,
         }
-    
+
     def _handle_rectification_request(
         self,
         data_subject_id: str,
@@ -483,44 +483,44 @@ class GDPRComplianceManager:
         """Handle data rectification request."""
         # This would require integration with the actual data storage system
         # For now, we log the request
-        
+
         self._add_audit_entry(
             action="rectification_requested",
             data_subject_id=data_subject_id,
             details=details or {}
         )
-        
+
         return {
             'success': True,
             'message': 'Rectification request logged for manual processing',
         }
-    
+
     def _handle_restriction_request(self, data_subject_id: str) -> Dict[str, Any]:
         """Handle processing restriction request."""
         # Mark processing as restricted
         restricted_records = []
-        
+
         for record in self.processing_records.values():
             if record.data_subject_id == data_subject_id:
                 # Add restriction flag (would need to modify the record structure)
                 restricted_records.append(record.id)
-        
+
         self._add_audit_entry(
             action="processing_restricted",
             data_subject_id=data_subject_id,
             details={'restricted_records': restricted_records}
         )
-        
+
         return {
             'success': True,
             'restricted_records': restricted_records,
         }
-    
+
     def _handle_portability_request(self, data_subject_id: str) -> Dict[str, Any]:
         """Handle data portability request."""
         # Get data in structured format
         access_data = self._handle_access_request(data_subject_id)
-        
+
         # Format for portability (JSON format)
         portable_data = {
             'data_subject_id': data_subject_id,
@@ -528,30 +528,30 @@ class GDPRComplianceManager:
             'export_format': 'JSON',
             'data': access_data,
         }
-        
+
         return {
             'success': True,
             'portable_data': portable_data,
         }
-    
+
     def _handle_objection_request(self, data_subject_id: str) -> Dict[str, Any]:
         """Handle objection to processing request."""
         # Check which processing can be stopped
         can_stop = []
         cannot_stop = []
-        
+
         for record in self.processing_records.values():
             if record.data_subject_id == data_subject_id:
                 if record.processing_purpose == ProcessingPurpose.LEGITIMATE_INTERESTS:
                     can_stop.append(record.id)
                 else:
                     cannot_stop.append(record.id)
-        
+
         # Stop processing where possible
         for record_id in can_stop:
             # Mark as stopped (would need additional record structure)
             pass
-        
+
         self._add_audit_entry(
             action="objection_processed",
             data_subject_id=data_subject_id,
@@ -560,13 +560,13 @@ class GDPRComplianceManager:
                 'continuing_processing': cannot_stop,
             }
         )
-        
+
         return {
             'success': True,
             'stopped_processing': can_stop,
             'continuing_processing': cannot_stop,
         }
-    
+
     def _has_valid_consent(
         self,
         data_subject_id: str,
@@ -578,29 +578,29 @@ class GDPRComplianceManager:
             if (consent.data_subject_id == data_subject_id and
                 consent.is_valid() and
                 purpose in consent.purposes):
-                
+
                 # Check if all data categories are covered
                 consent_categories = set(consent.data_categories)
                 required_categories = set(data_categories)
-                
+
                 if required_categories.issubset(consent_categories):
                     return True
-        
+
         return False
-    
+
     def _stop_processing_for_subject(self, data_subject_id: str) -> None:
         """Stop all consent-based processing for a data subject."""
         # This would integrate with the actual ML pipeline to stop processing
         # For now, we just log it
-        
+
         self._add_audit_entry(
             action="processing_stopped",
             data_subject_id=data_subject_id,
             details={}
         )
-        
+
         logger.info(f"Stopped processing for data subject {data_subject_id}")
-    
+
     def _add_audit_entry(
         self,
         action: str,
@@ -615,13 +615,13 @@ class GDPRComplianceManager:
             'details': details or {},
             'controller': self.controller_name,
         }
-        
+
         self.audit_log.append(entry)
-        
+
         # Keep audit log size manageable
         if len(self.audit_log) > 10000:
             self.audit_log = self.audit_log[-8000:]  # Keep last 8000 entries
-    
+
     def report_data_breach(
         self,
         incident_type: str,
@@ -631,14 +631,14 @@ class GDPRComplianceManager:
         risk_assessment: str,
     ) -> str:
         """Report a data breach incident.
-        
+
         Args:
             incident_type: Type of breach
             affected_subjects: Number of affected data subjects
             data_categories: Categories of data affected
             description: Description of the incident
             risk_assessment: Risk assessment
-            
+
         Returns:
             Incident ID
         """
@@ -649,13 +649,13 @@ class GDPRComplianceManager:
             description=description,
             risk_assessment=risk_assessment,
             notification_required=affected_subjects > 250 or any(
-                cat in [DataCategory.BIOMETRIC, DataCategory.HEALTH] 
+                cat in [DataCategory.BIOMETRIC, DataCategory.HEALTH]
                 for cat in data_categories
             ),
         )
-        
+
         self.breach_incidents[incident.id] = incident
-        
+
         self._add_audit_entry(
             action="data_breach_reported",
             details={
@@ -664,13 +664,13 @@ class GDPRComplianceManager:
                 'notification_required': incident.notification_required,
             }
         )
-        
+
         if incident.notification_required:
             logger.critical(f"Data breach requires notification: {incident.id}")
             # In real implementation, this would trigger notification workflows
-        
+
         return incident.id
-    
+
     def get_compliance_report(self) -> Dict[str, Any]:
         """Generate compliance status report."""
         with self._lock:
@@ -678,32 +678,32 @@ class GDPRComplianceManager:
             total_subjects = len(set(
                 record.data_subject_id for record in self.processing_records.values()
             ))
-            
+
             active_consents = sum(
-                1 for consent in self.consent_records.values() 
+                1 for consent in self.consent_records.values()
                 if consent.is_valid()
             )
-            
+
             withdrawn_consents = sum(
-                1 for consent in self.consent_records.values() 
+                1 for consent in self.consent_records.values()
                 if consent.is_withdrawn
             )
-            
+
             pending_requests = sum(
                 1 for req in self.data_subject_requests.values()
                 if req['status'] == 'processing'
             )
-            
+
             # Check for overdue deletions
             overdue_deletions = []
             current_time = time.time()
-            
+
             for record in self.processing_records.values():
                 if record.retention_period:
                     expiry_time = record.timestamp + (record.retention_period * 24 * 60 * 60)
                     if current_time > expiry_time:
                         overdue_deletions.append(record.id)
-            
+
             return {
                 'controller': self.controller_name,
                 'dpo_contact': self.dpo_contact,
@@ -725,42 +725,42 @@ class GDPRComplianceManager:
                 },
                 'recommendations': self._generate_compliance_recommendations(),
             }
-    
+
     def _generate_compliance_recommendations(self) -> List[str]:
         """Generate compliance recommendations."""
         recommendations = []
-        
+
         # Check consent expiry
         expiring_soon = 0
         thirty_days = 30 * 24 * 60 * 60
         current_time = time.time()
-        
+
         for consent in self.consent_records.values():
             if consent.is_valid():
                 expiry_time = consent.consent_timestamp + (2 * 365 * 24 * 60 * 60)
                 if expiry_time - current_time < thirty_days:
                     expiring_soon += 1
-        
+
         if expiring_soon > 0:
             recommendations.append(f"{expiring_soon} consent records expiring within 30 days")
-        
+
         # Check data retention
         overdue = sum(
             1 for record in self.processing_records.values()
-            if record.retention_period and 
+            if record.retention_period and
             current_time > record.timestamp + (record.retention_period * 24 * 60 * 60)
         )
-        
+
         if overdue > 0:
             recommendations.append(f"{overdue} records past retention period - schedule deletion")
-        
+
         # Check pending requests
         pending = sum(
             1 for req in self.data_subject_requests.values()
             if req['status'] == 'processing'
         )
-        
+
         if pending > 5:
             recommendations.append(f"{pending} pending data subject requests - review response times")
-        
+
         return recommendations if recommendations else ["All compliance checks passed"]

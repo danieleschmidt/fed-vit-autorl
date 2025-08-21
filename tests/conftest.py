@@ -25,13 +25,13 @@ def test_config():
     os.environ["FED_VIT_AUTORL_ENV"] = "test"
     os.environ["LOG_LEVEL"] = "WARNING"
     os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Force CPU for tests
-    
+
     # Set random seeds for reproducibility
     torch.manual_seed(42)
     np.random.seed(42)
-    
+
     yield
-    
+
     # Cleanup after all tests
     for key in ["FED_VIT_AUTORL_ENV", "LOG_LEVEL"]:
         os.environ.pop(key, None)
@@ -100,14 +100,14 @@ def sample_segmentation_targets():
 
 class MockDataset(Dataset):
     """Mock dataset for testing."""
-    
+
     def __init__(self, size: int = 100, image_size: Tuple[int, int] = (224, 224)):
         self.size = size
         self.image_size = image_size
-        
+
     def __len__(self):
         return self.size
-        
+
     def __getitem__(self, idx):
         image = torch.randn(3, *self.image_size)
         label = torch.randint(0, 10, (1,)).item()
@@ -138,18 +138,18 @@ def mock_vit_model():
             self.depth = 12
             self.patch_size = 16
             self.projection = nn.Linear(768, 1000)
-            
+
         def forward(self, x):
             batch_size = x.shape[0]
             # Mock ViT output
             features = torch.randn(batch_size, 197, 768)  # 197 = 196 patches + 1 cls token
             logits = self.projection(features[:, 0])  # Use CLS token
             return logits
-            
+
         def get_features(self, x):
             batch_size = x.shape[0]
             return torch.randn(batch_size, 197, 768)
-    
+
     return MockViTModel()
 
 
@@ -161,14 +161,14 @@ def mock_detection_head():
             super().__init__()
             self.classifier = nn.Linear(768, 91)  # COCO classes
             self.bbox_predictor = nn.Linear(768, 4)
-            
+
         def forward(self, features):
             batch_size = features.shape[0]
             return {
                 "pred_logits": torch.randn(batch_size, 100, 91),
                 "pred_boxes": torch.randn(batch_size, 100, 4)
             }
-    
+
     return MockDetectionHead()
 
 
@@ -180,20 +180,20 @@ def mock_rl_policy():
             super().__init__()
             self.actor = nn.Linear(768, 4)  # 4 actions: throttle, brake, steer, gear
             self.critic = nn.Linear(768, 1)
-            
+
         def forward(self, state):
             batch_size = state.shape[0] if state.dim() > 1 else 1
             if state.dim() == 1:
                 state = state.unsqueeze(0)
-            
+
             action_logits = self.actor(state)
             value = self.critic(state)
-            
+
             return {
                 "action_logits": action_logits,
                 "value": value
             }
-    
+
     return MockRLPolicy()
 
 
@@ -206,7 +206,7 @@ def mock_federated_client():
             self.client_id = client_id
             self.model = model
             self.local_data = MockDataset(size=50)
-            
+
         def local_update(self, num_epochs: int = 1):
             """Simulate local training."""
             return {
@@ -215,11 +215,11 @@ def mock_federated_client():
                 "loss": torch.tensor(np.random.uniform(0.1, 2.0)),
                 "model_state_dict": self.model.state_dict()
             }
-            
+
         def set_model_parameters(self, state_dict):
             """Set model parameters from global model."""
             self.model.load_state_dict(state_dict)
-    
+
     return MockFederatedClient
 
 
@@ -230,7 +230,7 @@ def mock_federated_server():
         def __init__(self, global_model: nn.Module):
             self.global_model = global_model
             self.round = 0
-            
+
         def aggregate_updates(self, client_updates: List[Dict]):
             """Simulate FedAvg aggregation."""
             self.round += 1
@@ -240,11 +240,11 @@ def mock_federated_server():
                 "num_clients": len(client_updates),
                 "global_loss": torch.tensor(np.mean([u["loss"].item() for u in client_updates]))
             }
-            
+
         def get_global_model_state(self):
             """Get global model state dict."""
             return self.global_model.state_dict()
-    
+
     return MockFederatedServer
 
 
@@ -256,20 +256,20 @@ def mock_differential_privacy():
         def __init__(self, epsilon: float = 1.0, delta: float = 1e-5):
             self.epsilon = epsilon
             self.delta = delta
-            
+
         def add_noise(self, tensor: torch.Tensor, sensitivity: float = 1.0):
             """Add Gaussian noise to tensor."""
             noise_scale = sensitivity * np.sqrt(2 * np.log(1.25 / self.delta)) / self.epsilon
             noise = torch.normal(0, noise_scale, tensor.shape)
             return tensor + noise
-            
+
         def privatize_gradients(self, gradients: Dict[str, torch.Tensor]):
             """Add noise to gradients."""
             private_gradients = {}
             for name, grad in gradients.items():
                 private_gradients[name] = self.add_noise(grad)
             return private_gradients
-    
+
     return MockDifferentialPrivacy()
 
 
@@ -282,11 +282,11 @@ def mock_carla_env():
             self.action_space_size = 4
             self.observation_shape = (3, 224, 224)
             self.num_vehicles = 1
-            
+
         def reset(self):
             """Reset environment."""
             return torch.randn(*self.observation_shape)
-            
+
         def step(self, action):
             """Take environment step."""
             obs = torch.randn(*self.observation_shape)
@@ -294,7 +294,7 @@ def mock_carla_env():
             done = np.random.random() < 0.1
             info = {"collision": False, "lane_violation": False}
             return obs, reward, done, info
-    
+
     return MockCarlaEnv()
 
 
@@ -318,19 +318,19 @@ def mock_edge_optimizer():
     class MockEdgeOptimizer:
         def __init__(self):
             self.supported_formats = ["onnx", "trt", "quantized"]
-            
+
         def optimize_model(self, model: nn.Module, target_format: str = "onnx"):
             """Simulate model optimization."""
             if target_format not in self.supported_formats:
                 raise ValueError(f"Unsupported format: {target_format}")
-                
+
             return {
                 "optimized_model": model,
                 "compression_ratio": np.random.uniform(2, 10),
                 "latency_improvement": np.random.uniform(1.2, 5.0),
                 "accuracy_retention": np.random.uniform(0.95, 0.99)
             }
-    
+
     return MockEdgeOptimizer()
 
 
@@ -370,11 +370,11 @@ def pytest_collection_modifyitems(config, items):
         # Add slow marker to tests that might be slow
         if "benchmark" in item.nodeid or "performance" in item.nodeid:
             item.add_marker(pytest.mark.slow)
-            
+
         # Add integration marker to integration tests
         if "integration" in item.nodeid:
             item.add_marker(pytest.mark.integration)
-            
+
         # Add e2e marker to end-to-end tests
         if "e2e" in item.nodeid:
             item.add_marker(pytest.mark.e2e)
@@ -385,11 +385,11 @@ def pytest_collection_modifyitems(config, items):
 def cleanup_after_test():
     """Cleanup after each test."""
     yield
-    
+
     # Clear CUDA cache if available
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
-    
+
     # Reset random seeds
     torch.manual_seed(42)
     np.random.seed(42)

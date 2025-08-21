@@ -6,7 +6,7 @@ from .benchmarks import AutonomousDrivingBenchmark, FederatedLearningBenchmark
 
 __all__ = [
     "PerceptionMetrics",
-    "DrivingMetrics", 
+    "DrivingMetrics",
     "FederationMetrics",
     "ModelEvaluator",
     "FederatedEvaluator",

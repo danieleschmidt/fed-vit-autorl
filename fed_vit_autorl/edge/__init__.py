@@ -7,7 +7,7 @@ from .compression import ModelCompressor, ONNXConverter
 
 __all__ = [
     "ModelPruner",
-    "ModelQuantizer", 
+    "ModelQuantizer",
     "TensorRTOptimizer",
     "EdgeVehicleNode",
     "EdgeModelDeployer",

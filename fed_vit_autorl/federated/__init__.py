@@ -8,7 +8,7 @@ from .communication import GradientCompressor, AsyncCommunicator
 
 __all__ = [
     "FedAvgAggregator",
-    "FedProxAggregator", 
+    "FedProxAggregator",
     "FederatedClient",
     "FederatedServer",
     "DifferentialPrivacy",

@@ -9,7 +9,7 @@ from transformers import ViTModel, ViTConfig
 
 class ViTPerception(nn.Module):
     """Vision Transformer for autonomous driving perception.
-    
+
     Args:
         img_size: Input image size
         patch_size: Patch size for ViT
@@ -19,7 +19,7 @@ class ViTPerception(nn.Module):
         num_heads: Number of attention heads
         pretrained: Whether to use pretrained weights
     """
-    
+
     def __init__(
         self,
         img_size: int = 384,
@@ -31,11 +31,11 @@ class ViTPerception(nn.Module):
         pretrained: bool = True,
     ) -> None:
         super().__init__()
-        
+
         self.img_size = img_size
         self.patch_size = patch_size
         self.num_classes = num_classes
-        
+
         # Configure ViT
         config = ViTConfig(
             image_size=img_size,
@@ -48,78 +48,78 @@ class ViTPerception(nn.Module):
             hidden_dropout_prob=0.1,
             attention_probs_dropout_prob=0.1,
         )
-        
+
         self.vit = ViTModel(config)
         self.classifier = nn.Linear(embed_dim, num_classes)
-        
+
         if pretrained:
             self._load_pretrained_weights()
-    
+
     def _load_pretrained_weights(self) -> None:
         """Load pretrained ViT weights from transformers."""
         try:
             # Load pretrained ViT-Base model
             pretrained_model = ViTModel.from_pretrained('google/vit-base-patch16-384')
-            
+
             # Transfer compatible weights
             state_dict = pretrained_model.state_dict()
             model_state_dict = self.vit.state_dict()
-            
+
             # Filter and load compatible weights
             compatible_weights = {}
             for name, param in state_dict.items():
                 if name in model_state_dict and param.shape == model_state_dict[name].shape:
                     compatible_weights[name] = param
-            
+
             self.vit.load_state_dict(compatible_weights, strict=False)
             print(f"Loaded {len(compatible_weights)} pretrained weights")
-            
+
         except Exception as e:
             print(f"Warning: Could not load pretrained weights: {e}")
             print("Continuing with random initialization")
-    
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass through ViT perception model.
-        
+
         Args:
             x: Input tensor of shape (batch_size, 3, height, width)
-            
+
         Returns:
             Features tensor of shape (batch_size, num_classes)
         """
         outputs = self.vit(pixel_values=x)
         features = outputs.last_hidden_state[:, 0]  # CLS token
         return self.classifier(features)
-    
+
     def get_features(self, x: torch.Tensor) -> torch.Tensor:
         """Extract features without classification head.
-        
+
         Args:
             x: Input tensor of shape (batch_size, 3, height, width)
-            
+
         Returns:
             Feature tensor of shape (batch_size, embed_dim)
         """
         outputs = self.vit(pixel_values=x)
         return outputs.last_hidden_state[:, 0]  # CLS token
-    
+
     def get_patch_features(self, x: torch.Tensor) -> torch.Tensor:
         """Extract all patch features for dense prediction tasks.
-        
+
         Args:
             x: Input tensor of shape (batch_size, 3, height, width)
-            
+
         Returns:
             Patch features of shape (batch_size, num_patches + 1, embed_dim)
         """
         outputs = self.vit(pixel_values=x)
         return outputs.last_hidden_state
-    
+
     def freeze_backbone(self) -> None:
         """Freeze ViT backbone parameters for fine-tuning."""
         for param in self.vit.parameters():
             param.requires_grad = False
-    
+
     def unfreeze_backbone(self) -> None:
         """Unfreeze ViT backbone parameters."""
         for param in self.vit.parameters():

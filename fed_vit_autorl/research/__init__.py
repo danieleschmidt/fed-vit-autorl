@@ -9,7 +9,7 @@ from .experimental_framework import (
 
 __all__ = [
     "ExperimentRunner",
-    "ExperimentConfig", 
+    "ExperimentConfig",
     "ExperimentResult",
     "StatisticalValidator",
 ]

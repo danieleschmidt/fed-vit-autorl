@@ -53,7 +53,7 @@ class ScalingMetrics:
     model_accuracy: float = 0.0
     energy_consumption: float = 0.0
     cost_efficiency: float = 0.0
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary."""
         return {
@@ -88,10 +88,10 @@ class ScalingAction:
 
 class MetricsCollector:
     """Collects and aggregates system metrics for scaling decisions."""
-    
+
     def __init__(self, collection_interval: float = 1.0, history_size: int = 1000):
         """Initialize metrics collector.
-        
+
         Args:
             collection_interval: Interval between metric collections
             history_size: Number of historical metrics to retain
@@ -102,26 +102,26 @@ class MetricsCollector:
         self.is_collecting = False
         self.collection_thread: Optional[threading.Thread] = None
         self._lock = threading.Lock()
-        
+
     @with_error_handling(max_retries=2, auto_recover=True)
     def start_collection(self) -> None:
         """Start metrics collection."""
         if self.is_collecting:
             logger.warning("Metrics collection already started")
             return
-        
+
         self.is_collecting = True
         self.collection_thread = threading.Thread(target=self._collection_loop, daemon=True)
         self.collection_thread.start()
         logger.info("Started metrics collection")
-    
+
     def stop_collection(self) -> None:
         """Stop metrics collection."""
         self.is_collecting = False
         if self.collection_thread:
             self.collection_thread.join(timeout=5.0)
         logger.info("Stopped metrics collection")
-    
+
     def _collection_loop(self) -> None:
         """Main collection loop."""
         while self.is_collecting:
@@ -137,23 +137,23 @@ class MetricsCollector:
                     auto_recover=True
                 )
                 time.sleep(self.collection_interval)
-    
+
     def _collect_current_metrics(self) -> ScalingMetrics:
         """Collect current system metrics."""
         metrics = ScalingMetrics()
-        
+
         # System resource metrics
         metrics.cpu_usage = psutil.cpu_percent(interval=0.1)
         memory_info = psutil.virtual_memory()
         metrics.memory_usage = memory_info.percent
-        
+
         # GPU metrics (if available)
         try:
             if torch.cuda.is_available():
                 metrics.gpu_usage = torch.cuda.utilization()
         except Exception:
             metrics.gpu_usage = 0.0
-        
+
         # Network metrics
         try:
             net_io = psutil.net_io_counters()
@@ -163,30 +163,30 @@ class MetricsCollector:
                 metrics.network_throughput = bytes_diff / time_diff / 1024 / 1024  # MB/s
             else:
                 metrics.network_throughput = 0.0
-            
+
             self._prev_net_io = net_io
             self._prev_net_bytes = net_io.bytes_sent + net_io.bytes_recv
             self._prev_net_time = time.time()
         except Exception:
             metrics.network_throughput = 0.0
-        
+
         return metrics
-    
+
     def get_recent_metrics(self, window_size: int = 10) -> List[ScalingMetrics]:
         """Get recent metrics within window."""
         with self._lock:
             return list(self.metrics_history)[-window_size:]
-    
+
     def get_metric_statistics(self, metric_name: str, window_size: int = 60) -> Dict[str, float]:
         """Get statistics for a specific metric."""
         with self._lock:
             recent_metrics = list(self.metrics_history)[-window_size:]
-        
+
         if not recent_metrics:
             return {'mean': 0.0, 'std': 0.0, 'min': 0.0, 'max': 0.0}
-        
+
         values = [getattr(m, metric_name, 0.0) for m in recent_metrics]
-        
+
         return {
             'mean': np.mean(values),
             'std': np.std(values),
@@ -199,17 +199,17 @@ class MetricsCollector:
 
 class PredictiveScaler:
     """Predictive scaling using time series forecasting."""
-    
+
     def __init__(self, prediction_horizon: int = 300):  # 5 minutes
         """Initialize predictive scaler.
-        
+
         Args:
             prediction_horizon: Time horizon for predictions (seconds)
         """
         self.prediction_horizon = prediction_horizon
         self.models = {}  # Trained prediction models
         self.feature_history = defaultdict(list)
-        
+
     @with_error_handling(max_retries=1, auto_recover=True)
     def predict_demand(
         self,
@@ -217,17 +217,17 @@ class PredictiveScaler:
         resource_type: ResourceType,
     ) -> Tuple[float, float]:
         """Predict future resource demand.
-        
+
         Args:
             metrics_history: Historical metrics
             resource_type: Type of resource to predict
-            
+
         Returns:
             Tuple of (predicted_demand, confidence)
         """
         if len(metrics_history) < 10:
             return 0.0, 0.0  # Not enough data
-        
+
         try:
             # Simple linear trend prediction (can be replaced with ML models)
             feature_map = {
@@ -237,56 +237,56 @@ class PredictiveScaler:
                 ResourceType.NETWORK: 'network_throughput',
                 ResourceType.CLIENT: 'client_count',
             }
-            
+
             feature_name = feature_map.get(resource_type)
             if not feature_name:
                 return 0.0, 0.0
-            
+
             # Extract time series
             values = [getattr(m, feature_name, 0.0) for m in metrics_history[-60:]]
             timestamps = [m.timestamp for m in metrics_history[-60:]]
-            
+
             if len(values) < 5:
                 return values[-1] if values else 0.0, 0.5
-            
+
             # Simple linear regression for trend
             x = np.array(range(len(values)))
             y = np.array(values)
-            
+
             # Remove outliers
             q75, q25 = np.percentile(y, [75, 25])
             iqr = q75 - q25
             lower_bound = q25 - 1.5 * iqr
             upper_bound = q75 + 1.5 * iqr
             mask = (y >= lower_bound) & (y <= upper_bound)
-            
+
             if np.sum(mask) < 3:
                 return y[-1], 0.3
-            
+
             x_clean = x[mask]
             y_clean = y[mask]
-            
+
             # Fit linear trend
             coeffs = np.polyfit(x_clean, y_clean, 1)
             slope, intercept = coeffs
-            
+
             # Predict future value
             future_x = len(values) + (self.prediction_horizon / 60)  # Assuming 1-minute intervals
             predicted_value = slope * future_x + intercept
-            
+
             # Calculate confidence based on recent variance
             recent_variance = np.var(y[-10:])
             confidence = max(0.1, 1.0 - min(1.0, recent_variance / np.mean(y)))
-            
+
             return max(0.0, predicted_value), confidence
-            
+
         except Exception as e:
             handle_error(
                 e,
                 context={'operation': 'predict_demand', 'resource_type': resource_type.value}
             )
             return 0.0, 0.0
-    
+
     def update_model(self, metrics_history: List[ScalingMetrics]) -> None:
         """Update prediction models with new data."""
         # Placeholder for model training/updating
@@ -295,7 +295,7 @@ class PredictiveScaler:
 
 class HyperscaleAutoscaler:
     """Advanced auto-scaler for federated learning systems."""
-    
+
     def __init__(
         self,
         scaling_policy: ScalingPolicy = ScalingPolicy.HYBRID,
@@ -309,7 +309,7 @@ class HyperscaleAutoscaler:
         prediction_weight: float = 0.3,
     ):
         """Initialize hyperscale autoscaler.
-        
+
         Args:
             scaling_policy: Scaling policy to use
             min_clients: Minimum number of clients
@@ -330,10 +330,10 @@ class HyperscaleAutoscaler:
         self.scale_down_threshold = scale_down_threshold
         self.cooldown_period = cooldown_period
         self.prediction_weight = prediction_weight
-        
+
         self.metrics_collector = MetricsCollector()
         self.predictive_scaler = PredictiveScaler()
-        
+
         self.last_scaling_actions: Dict[ResourceType, float] = {}
         self.scaling_history: List[ScalingAction] = []
         self.current_resources = {
@@ -341,71 +341,71 @@ class HyperscaleAutoscaler:
             ResourceType.SERVER: 1,
             ResourceType.COMPUTE: 1,
         }
-        
+
         self.scaling_callbacks: Dict[ResourceType, Callable] = {}
         self.is_running = False
         self.autoscaler_thread: Optional[threading.Thread] = None
-        
+
         logger.info("Initialized hyperscale autoscaler")
-    
+
     def register_scaling_callback(
         self,
         resource_type: ResourceType,
         callback: Callable[[ScalingAction], bool]
     ) -> None:
         """Register callback for scaling actions.
-        
+
         Args:
             resource_type: Type of resource
             callback: Function to execute scaling action
         """
         self.scaling_callbacks[resource_type] = callback
         logger.info(f"Registered scaling callback for {resource_type.value}")
-    
+
     @with_error_handling(max_retries=2, auto_recover=True)
     def start_autoscaling(self) -> None:
         """Start the autoscaling engine."""
         if self.is_running:
             logger.warning("Autoscaler already running")
             return
-        
+
         self.is_running = True
         self.metrics_collector.start_collection()
         self.autoscaler_thread = threading.Thread(target=self._autoscaling_loop, daemon=True)
         self.autoscaler_thread.start()
-        
+
         logger.info("Started hyperscale autoscaler")
-    
+
     def stop_autoscaling(self) -> None:
         """Stop the autoscaling engine."""
         self.is_running = False
         self.metrics_collector.stop_collection()
-        
+
         if self.autoscaler_thread:
             self.autoscaler_thread.join(timeout=10.0)
-        
+
         logger.info("Stopped hyperscale autoscaler")
-    
+
     def _autoscaling_loop(self) -> None:
         """Main autoscaling loop."""
         while self.is_running:
             try:
                 # Get recent metrics
                 metrics_history = self.metrics_collector.get_recent_metrics(window_size=60)
-                
+
                 if len(metrics_history) < 5:
                     time.sleep(30)  # Wait for more data
                     continue
-                
+
                 # Evaluate scaling decisions
                 scaling_decisions = self._evaluate_scaling_decisions(metrics_history)
-                
+
                 # Execute scaling actions
                 for action in scaling_decisions:
                     self._execute_scaling_action(action)
-                
+
                 time.sleep(30)  # Check every 30 seconds
-                
+
             except Exception as e:
                 handle_error(
                     e,
@@ -413,7 +413,7 @@ class HyperscaleAutoscaler:
                     auto_recover=True
                 )
                 time.sleep(30)
-    
+
     @with_error_handling(max_retries=1, auto_recover=True)
     def _evaluate_scaling_decisions(
         self,
@@ -422,17 +422,17 @@ class HyperscaleAutoscaler:
         """Evaluate whether scaling actions are needed."""
         decisions = []
         current_time = time.time()
-        
+
         if not metrics_history:
             return decisions
-        
+
         latest_metrics = metrics_history[-1]
-        
+
         # Check cooldown periods
         def in_cooldown(resource_type: ResourceType) -> bool:
             last_action_time = self.last_scaling_actions.get(resource_type, 0)
             return current_time - last_action_time < self.cooldown_period
-        
+
         # Evaluate CPU scaling
         if not in_cooldown(ResourceType.COMPUTE):
             cpu_stats = self.metrics_collector.get_metric_statistics('cpu_usage')
@@ -444,7 +444,7 @@ class HyperscaleAutoscaler:
             )
             if cpu_decision:
                 decisions.append(cpu_decision)
-        
+
         # Evaluate memory scaling
         if not in_cooldown(ResourceType.MEMORY):
             memory_stats = self.metrics_collector.get_metric_statistics('memory_usage')
@@ -456,15 +456,15 @@ class HyperscaleAutoscaler:
             )
             if memory_decision:
                 decisions.append(memory_decision)
-        
+
         # Evaluate client scaling (federated learning specific)
         if not in_cooldown(ResourceType.CLIENT):
             client_decision = self._evaluate_client_scaling(metrics_history)
             if client_decision:
                 decisions.append(client_decision)
-        
+
         return decisions
-    
+
     def _evaluate_resource_scaling(
         self,
         current_value: float,
@@ -473,7 +473,7 @@ class HyperscaleAutoscaler:
         metrics_history: List[ScalingMetrics]
     ) -> Optional[ScalingAction]:
         """Evaluate scaling for a specific resource."""
-        
+
         # Reactive scaling component
         reactive_score = 0.0
         if current_value > self.scale_up_threshold:
@@ -484,19 +484,19 @@ class HyperscaleAutoscaler:
             reactive_score = 0.7  # Scale up based on average
         elif stats['mean'] < self.scale_down_threshold:
             reactive_score = -0.7  # Scale down based on average
-        
+
         # Predictive scaling component
         predictive_score = 0.0
         if self.scaling_policy in [ScalingPolicy.PREDICTIVE, ScalingPolicy.HYBRID]:
             predicted_demand, confidence = self.predictive_scaler.predict_demand(
                 metrics_history, resource_type
             )
-            
+
             if predicted_demand > self.scale_up_threshold:
                 predictive_score = confidence
             elif predicted_demand < self.scale_down_threshold:
                 predictive_score = -confidence
-        
+
         # Combine reactive and predictive scores
         if self.scaling_policy == ScalingPolicy.REACTIVE:
             final_score = reactive_score
@@ -505,7 +505,7 @@ class HyperscaleAutoscaler:
         else:  # HYBRID
             final_score = (1 - self.prediction_weight) * reactive_score + \
                          self.prediction_weight * predictive_score
-        
+
         # Generate scaling action
         if abs(final_score) > 0.5:  # Threshold for action
             if final_score > 0:
@@ -516,7 +516,7 @@ class HyperscaleAutoscaler:
                 action_type = "scale_down"
                 target_value = max(1, self.current_resources.get(resource_type, 1) - 1)
                 reason = f"Low {resource_type.value} usage: {current_value:.1f}%"
-            
+
             return ScalingAction(
                 resource_type=resource_type,
                 action=action_type,
@@ -528,9 +528,9 @@ class HyperscaleAutoscaler:
                     'performance_change': 0.1 if action_type == "scale_up" else -0.05
                 }
             )
-        
+
         return None
-    
+
     def _evaluate_client_scaling(
         self,
         metrics_history: List[ScalingMetrics]
@@ -538,41 +538,41 @@ class HyperscaleAutoscaler:
         """Evaluate federated learning client scaling."""
         if not metrics_history:
             return None
-        
+
         latest_metrics = metrics_history[-1]
         current_clients = self.current_resources.get(ResourceType.CLIENT, self.min_clients)
-        
+
         # Factors for client scaling
         convergence_rate = latest_metrics.convergence_rate
         round_duration = latest_metrics.round_duration
         communication_overhead = latest_metrics.communication_overhead
-        
+
         # Scale up if:
         # - Convergence is slow and we have capacity
         # - Round duration is acceptable
         # - Communication overhead is manageable
         scale_up_score = 0.0
         scale_down_score = 0.0
-        
+
         if convergence_rate < 0.01 and current_clients < self.max_clients:
             scale_up_score += 0.3
-        
+
         if round_duration < 300 and current_clients < self.max_clients:  # < 5 minutes
             scale_up_score += 0.2
-        
+
         if communication_overhead < 0.3:
             scale_up_score += 0.2
-        
+
         # Scale down if:
         # - Communication overhead is high
         # - Round duration is too long
         # - We have more than minimum clients
         if communication_overhead > 0.7 and current_clients > self.min_clients:
             scale_down_score += 0.4
-        
+
         if round_duration > 600 and current_clients > self.min_clients:  # > 10 minutes
             scale_down_score += 0.3
-        
+
         # Make scaling decision
         if scale_up_score > 0.4:
             target_clients = min(self.max_clients, current_clients + max(1, current_clients // 10))
@@ -600,27 +600,27 @@ class HyperscaleAutoscaler:
                     'communication_overhead_reduction': 0.2
                 }
             )
-        
+
         return None
-    
+
     @with_error_handling(max_retries=2, auto_recover=True)
     def _execute_scaling_action(self, action: ScalingAction) -> None:
         """Execute a scaling action."""
         start_time = time.time()
-        
+
         logger.info(
             f"Executing scaling action: {action.action} {action.resource_type.value} "
             f"to {action.target_value} (reason: {action.reason})"
         )
-        
+
         try:
             # Get callback for this resource type
             callback = self.scaling_callbacks.get(action.resource_type)
-            
+
             if callback:
                 success = callback(action)
                 action.success = success
-                
+
                 if success:
                     # Update current resource count
                     self.current_resources[action.resource_type] = action.target_value
@@ -631,7 +631,7 @@ class HyperscaleAutoscaler:
             else:
                 logger.warning(f"No callback registered for {action.resource_type.value}")
                 action.success = False
-        
+
         except Exception as e:
             action.success = False
             handle_error(
@@ -642,25 +642,25 @@ class HyperscaleAutoscaler:
                     'resource_type': action.resource_type.value
                 }
             )
-        
+
         action.execution_time = time.time() - start_time
         self.scaling_history.append(action)
-        
+
         # Keep history limited
         if len(self.scaling_history) > 1000:
             self.scaling_history = self.scaling_history[-800:]
-    
+
     def get_scaling_statistics(self) -> Dict[str, Any]:
         """Get autoscaling statistics."""
         if not self.scaling_history:
             return {'total_actions': 0}
-        
+
         successful_actions = [a for a in self.scaling_history if a.success]
         failed_actions = [a for a in self.scaling_history if not a.success]
-        
-        recent_actions = [a for a in self.scaling_history 
+
+        recent_actions = [a for a in self.scaling_history
                          if time.time() - (a.execution_time or 0) < 3600]  # Last hour
-        
+
         return {
             'total_actions': len(self.scaling_history),
             'successful_actions': len(successful_actions),
@@ -670,11 +670,11 @@ class HyperscaleAutoscaler:
             'current_resources': dict(self.current_resources),
             'scaling_policy': self.scaling_policy.value,
             'average_execution_time': np.mean([
-                a.execution_time for a in self.scaling_history 
+                a.execution_time for a in self.scaling_history
                 if a.execution_time is not None
             ]) if successful_actions else 0.0,
         }
-    
+
     def force_scaling_action(
         self,
         resource_type: ResourceType,
@@ -691,6 +691,6 @@ class HyperscaleAutoscaler:
             confidence=1.0,
             estimated_impact={}
         )
-        
+
         self._execute_scaling_action(scaling_action)
         return scaling_action.success or False

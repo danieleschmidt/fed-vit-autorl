@@ -26,7 +26,7 @@ except ImportError:
 
 __all__ = [
     "HealthChecker",
-    "FederatedHealthChecker", 
+    "FederatedHealthChecker",
     "MetricsCollector",
     "FederatedMetricsCollector",
     "PerformanceMonitor",

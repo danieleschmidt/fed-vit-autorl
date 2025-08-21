@@ -7,7 +7,7 @@ from .scenario_gen import ScenarioGenerator, DrivingScenario
 
 __all__ = [
     "CARLAFederatedEnv",
-    "CARLAVehicleClient", 
+    "CARLAVehicleClient",
     "MultiVehicleSimulation",
     "VehicleAgent",
     "NetworkSimulator",

@@ -15,17 +15,17 @@ from typing import Dict, List, Any, Optional
 
 class AcademicPaperGenerator:
     """Generates publication-ready academic papers from research results."""
-    
+
     def __init__(self, output_dir: str = "./publication_materials"):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(exist_ok=True)
-        
+
         print(f"\u2705 Academic Paper Generator initialized")
         print(f"\ud83d\udcc1 Output directory: {self.output_dir}")
-    
+
     def generate_ieee_paper(self, research_results: Dict[str, Any]) -> str:
         """Generate IEEE format research paper."""
-        
+
         paper_content = [
             "\\documentclass[conference]{IEEEtran}",
             "\\usepackage{amsmath,amssymb,amsfonts}",
@@ -149,10 +149,10 @@ class AcademicPaperGenerator:
             "\\end{itemize}",
             ""
         ]
-        
+
         # Add results section
         paper_content.extend(self._generate_results_section(research_results))
-        
+
         # Add remaining sections
         paper_content.extend([
             "",
@@ -191,19 +191,19 @@ class AcademicPaperGenerator:
             "",
             "\\end{document}"
         ])
-        
+
         # Save LaTeX paper
         paper_path = self.output_dir / "federated_learning_autonomous_vehicles.tex"
         with open(paper_path, "w") as f:
             f.write("\n".join(paper_content))
-        
+
         print(f"\ud83d\udcc4 IEEE format paper generated: {paper_path}")
-        
+
         return str(paper_path)
-    
+
     def _generate_results_section(self, research_results: Dict[str, Any]) -> List[str]:
         """Generate the results section with tables and analysis."""
-        
+
         results_section = [
             "\\section{Results}",
             "",
@@ -220,11 +220,11 @@ class AcademicPaperGenerator:
             "Algorithm & Accuracy & F1-Score & IoU & Comm. Eff. & Privacy \\\\",
             "\\midrule"
         ]
-        
+
         # Add performance data from research results
         if "summary_statistics" in research_results:
             stats = research_results["summary_statistics"]
-            
+
             # Novel algorithms first (bold)
             for alg in ["mh_fed", "app_vit", "cd_ft"]:
                 if alg in stats:
@@ -233,13 +233,13 @@ class AcademicPaperGenerator:
                     iou = f"{stats[alg]['iou']['mean']:.3f}"
                     comm = f"{stats[alg]['communication_efficiency']['mean']:.3f}"
                     priv = f"{stats[alg]['privacy_preservation']['mean']:.3f}"
-                    
+
                     results_section.append(
                         f"\\textbf{{{alg.replace('_', '-').upper()}}} & {acc} & {f1} & {iou} & {comm} & {priv} \\\\"
                     )
-            
+
             results_section.append("\\midrule")
-            
+
             # Baseline algorithms
             for alg in ["fedavg", "fedprox", "fixed_dp"]:
                 if alg in stats:
@@ -248,12 +248,12 @@ class AcademicPaperGenerator:
                     iou = f"{stats[alg]['iou']['mean']:.3f}"
                     comm = f"{stats[alg]['communication_efficiency']['mean']:.3f}"
                     priv = f"{stats[alg]['privacy_preservation']['mean']:.3f}"
-                    
+
                     alg_name = alg.replace('_', '-').title()
                     results_section.append(
                         f"{alg_name} & {acc} & {f1} & {iou} & {comm} & {priv} \\\\"
                     )
-        
+
         results_section.extend([
             "\\bottomrule",
             "\\end{tabular}",
@@ -272,7 +272,7 @@ class AcademicPaperGenerator:
             "Comparison & Metric & Improvement & p-value \\\\",
             "\\midrule"
         ])
-        
+
         # Add top 10 significant improvements
         if "significant_improvements" in research_results:
             top_improvements = sorted(
@@ -280,18 +280,18 @@ class AcademicPaperGenerator:
                 key=lambda x: x["improvement"],
                 reverse=True
             )[:10]
-            
+
             for imp in top_improvements:
                 novel_alg = imp["novel_algorithm"].replace("_", "-").upper()
                 baseline_alg = imp["baseline_algorithm"].replace("_", "-").title()
                 metric = imp["metric"].replace("_", " ").title()
                 improvement = f"+{imp['improvement']:.3f}"
                 p_value = f"{imp['p_value']:.6f}"
-                
+
                 results_section.append(
                     f"{novel_alg} vs {baseline_alg} & {metric} & {improvement} & {p_value} \\\\"
                 )
-        
+
         results_section.extend([
             "\\bottomrule",
             "\\end{tabular}",
@@ -308,12 +308,12 @@ class AcademicPaperGenerator:
             "\\item \\textbf{Statistical Rigor:} All major improvements show large effect sizes (Cohen's d > 0.8), indicating practical significance beyond statistical significance.",
             "\\end{itemize}"
         ])
-        
+
         return results_section
-    
+
     def generate_conference_abstract(self, research_results: Dict[str, Any]) -> str:
         """Generate conference abstract for submission."""
-        
+
         abstract_content = [
             "# Novel Federated Learning Algorithms for Autonomous Vehicle Perception",
             "",
@@ -325,7 +325,7 @@ class AcademicPaperGenerator:
             "",
             "**Results:** Comprehensive evaluation across four autonomous driving datasets (Cityscapes, nuScenes, KITTI, BDD100K) with 30 independent runs per condition demonstrates statistically significant improvements:",
             "- Accuracy: up to 12.0% improvement (MH-Fed vs Fixed-DP)",
-            "- Communication Efficiency: up to 14.4% improvement (MH-Fed vs FedProx)", 
+            "- Communication Efficiency: up to 14.4% improvement (MH-Fed vs FedProx)",
             "- Privacy Preservation: up to 40.2% improvement (APP-ViT vs FedAvg)",
             "- F1-Score: up to 12.5% improvement (MH-Fed vs Fixed-DP)",
             "- IoU: up to 11.0% improvement (MH-Fed vs Fixed-DP)",
@@ -338,19 +338,19 @@ class AcademicPaperGenerator:
             "",
             "**Significance:** This work addresses three critical gaps in federated learning for autonomous vehicles and provides a comprehensive evaluation framework for future research."
         ]
-        
+
         # Save abstract
         abstract_path = self.output_dir / "conference_abstract.md"
         with open(abstract_path, "w") as f:
             f.write("\n".join(abstract_content))
-        
+
         print(f"\ud83c\udfc6 Conference abstract generated: {abstract_path}")
-        
+
         return str(abstract_path)
-    
+
     def generate_presentation_slides(self, research_results: Dict[str, Any]) -> str:
         """Generate LaTeX Beamer presentation slides."""
-        
+
         slides_content = [
             "\\documentclass[aspectratio=169]{beamer}",
             "\\usetheme{Madrid}",
@@ -441,11 +441,11 @@ class AcademicPaperGenerator:
             "Algorithm & Accuracy & F1-Score & IoU & Comm. Eff. & Privacy \\\\",
             "\\midrule"
         ]
-        
+
         # Add performance data
         if "summary_statistics" in research_results:
             stats = research_results["summary_statistics"]
-            
+
             for alg in ["mh_fed", "app_vit", "cd_ft", "fedavg", "fedprox", "fixed_dp"]:
                 if alg in stats:
                     acc = f"{stats[alg]['accuracy']['mean']:.3f}"
@@ -453,15 +453,15 @@ class AcademicPaperGenerator:
                     iou = f"{stats[alg]['iou']['mean']:.3f}"
                     comm = f"{stats[alg]['communication_efficiency']['mean']:.3f}"
                     priv = f"{stats[alg]['privacy_preservation']['mean']:.3f}"
-                    
+
                     alg_name = alg.replace('_', '-').upper() if alg in ["mh_fed", "app_vit", "cd_ft"] else alg.replace('_', '-').title()
                     if alg in ["mh_fed", "app_vit", "cd_ft"]:
                         alg_name = f"\\textbf{{{alg_name}}}"
-                    
+
                     slides_content.append(
                         f"{alg_name} & {acc} & {f1} & {iou} & {comm} & {priv} \\\\"
                     )
-        
+
         slides_content.extend([
             "\\bottomrule",
             "\\end{tabular}",
@@ -503,40 +503,40 @@ class AcademicPaperGenerator:
             "",
             "\\end{document}"
         ])
-        
+
         # Save slides
         slides_path = self.output_dir / "presentation_slides.tex"
         with open(slides_path, "w") as f:
             f.write("\n".join(slides_content))
-        
+
         print(f"\ud83c\udfa5 Presentation slides generated: {slides_path}")
-        
+
         return str(slides_path)
 
 
 def generate_complete_publication_package(research_results_path: str = "./research_validation_results/detailed_results.json") -> str:
     """Generate complete publication package from research results."""
-    
+
     print("\n" + "\ud83d\udcdd" * 20 + " PUBLICATION GENERATOR " + "\ud83d\udcdd" * 20)
-    
+
     # Load research results
     with open(research_results_path, "r") as f:
         research_results = json.load(f)
-    
+
     # Initialize generator
     generator = AcademicPaperGenerator("./publication_materials")
-    
+
     print("\n\ud83d\ude80 Generating Complete Publication Package...")
-    
+
     # Generate IEEE format paper
     ieee_paper = generator.generate_ieee_paper(research_results)
-    
+
     # Generate conference abstract
     abstract = generator.generate_conference_abstract(research_results)
-    
+
     # Generate presentation slides
     slides = generator.generate_presentation_slides(research_results)
-    
+
     # Generate submission checklist
     checklist_content = [
         "# Publication Submission Checklist",
@@ -595,30 +595,30 @@ def generate_complete_publication_package(research_results_path: str = "./resear
         "---",
         f"*Checklist generated on {time.strftime('%Y-%m-%d %H:%M:%S')} by Terragon Labs Publication Generator*"
     ]
-    
+
     checklist_path = Path("./publication_materials") / "submission_checklist.md"
     with open(checklist_path, "w") as f:
         f.write("\n".join(checklist_content))
-    
+
     print("\n" + "\u2705" * 20 + " PUBLICATION PACKAGE COMPLETE " + "\u2705" * 20)
-    
+
     print("\n\ud83d\udcc1 Complete Publication Package Generated:")
     print("   \ud83d\udcc4 IEEE Format Research Paper (.tex)")
     print("   \ud83c\udfc6 Conference Abstract (.md)")
     print("   \ud83c\udfa5 Presentation Slides (.tex)")
     print("   \ud83d\udccb Submission Checklist (.md)")
     print("   \ud83d\udcca Research Validation Results (.json)")
-    
+
     print("\n\ud83c\udf86 Ready for Academic Submission!")
     print("\ud83c\udfc6 Recommended for high-impact venue submission")
-    
+
     return "./publication_materials"
 
 
 if __name__ == "__main__":
     # Generate complete publication package
     package_dir = generate_complete_publication_package()
-    
+
     print(f"\n\ud83d\udcc1 All materials available in: {package_dir}")
     print("\n\ud83d\ude80 Next steps:")
     print("   1. Compile LaTeX documents to PDF")
