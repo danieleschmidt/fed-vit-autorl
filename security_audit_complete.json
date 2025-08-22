@@ -1,0 +1,1660 @@
+{
+  "security_audit": {
+    "timestamp": 1755895497.8538384,
+    "system_status": {
+      "threat_level": "medium",
+      "active_threats": 34,
+      "recent_threats": 34,
+      "security_metrics": {
+        "threat_level": "ThreatLevel.MEDIUM",
+        "attack_detection_rate": 0.99,
+        "false_positive_rate": 0.02,
+        "response_time": 17.0,
+        "privacy_budget_remaining": 0.7844788819094036,
+        "encryption_overhead": 0.15,
+        "integrity_score": 0.0,
+        "resilience_factor": 1.0
+      },
+      "mitigation_actions_taken": {
+        "gradient_clipping": 21,
+        "robust_aggregation": 21,
+        "byzantine_resilient_aggregation": 21,
+        "outlier_detection": 21,
+        "trigger_detection": 5,
+        "model_inspection": 5,
+        "clean_label_validation": 5,
+        "differential_testing": 5,
+        "reputation_based_filtering": 6,
+        "consensus_verification": 6,
+        "multi_signature_validation": 6,
+        "stake_based_weighting": 6,
+        "traffic_shaping": 1,
+        "load_balancing": 1,
+        "resource_allocation_optimization": 1,
+        "emergency_failover": 1,
+        "proof_of_work_validation": 1,
+        "identity_verification": 1,
+        "resource_commitment_proof": 1,
+        "social_network_analysis": 1
+      },
+      "monitoring_status": "active",
+      "configuration": {
+        "anomaly_threshold": 0.65,
+        "assessment_interval": 3.0,
+        "adaptive_response": true
+      },
+      "recommendations": [
+        "Model integrity compromised - recommend full validation",
+        "Multiple active threats - consider emergency protocols"
+      ]
+    },
+    "threat_history": [
+      {
+        "timestamp": 1755895487.85245,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.4445789903096025,
+        "source_id": "vehicle_0",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.889157980619205,
+          "gradient_direction_similarity": 0.47629316224429163,
+          "update_frequency": 2.896366269736996,
+          "accuracy_impact": -0.13517079028743764,
+          "loss_reduction": -0.08123957358280376
+        }
+      },
+      {
+        "timestamp": 1755895487.852917,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.6758539514371882,
+        "source_id": "vehicle_0",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.889157980619205,
+          "gradient_direction_similarity": 0.47629316224429163,
+          "update_frequency": 2.896366269736996,
+          "accuracy_impact": -0.13517079028743764,
+          "loss_reduction": -0.08123957358280376
+        }
+      },
+      {
+        "timestamp": 1755895487.8530006,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8712526177851555,
+        "source_id": "vehicle_1",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.742505235570311,
+          "gradient_direction_similarity": 0.7089732545579681,
+          "update_frequency": 4.065234519685128,
+          "accuracy_impact": -0.08129730565121096,
+          "loss_reduction": 0.2056250398696486
+        }
+      },
+      {
+        "timestamp": 1755895487.8530412,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.6477474057741504,
+        "source_id": "vehicle_5",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.32570445109475776,
+          "gradient_direction_similarity": 0.5593439123249591,
+          "update_frequency": 4.756112731331327,
+          "accuracy_impact": -0.12954948115483006,
+          "loss_reduction": -0.08008771526106942
+        }
+      },
+      {
+        "timestamp": 1755895487.8530767,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8436517485623,
+        "source_id": "vehicle_6",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6873034971246,
+          "gradient_direction_similarity": 0.6315412740823574,
+          "update_frequency": 0.7789670738285109,
+          "accuracy_impact": 0.013936705808900968,
+          "loss_reduction": 0.2481780385870733
+        }
+      },
+      {
+        "timestamp": 1755895487.8531096,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.5001384611839073,
+        "source_id": "vehicle_8",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.2322604371926345,
+          "gradient_direction_similarity": 0.8128834770974707,
+          "update_frequency": 0.8890073589672096,
+          "accuracy_impact": -0.10002769223678146,
+          "loss_reduction": -0.0337551399608457
+        }
+      },
+      {
+        "timestamp": 1755895487.8531394,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.6662993858848387,
+        "source_id": "participant_1",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8677482114973594,
+          "contribution_quality": 0.3337006141151613,
+          "communication_frequency": 2.2340126171294634,
+          "resource_claims": 0.5192434079159203,
+          "reputation_score": 0.7288383383757442
+        }
+      },
+      {
+        "timestamp": 1755895487.8531675,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5002265033245097,
+        "source_id": "participant_7",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.920522133518824,
+          "contribution_quality": 0.4997734966754903,
+          "communication_frequency": 2.1874579687959885,
+          "resource_claims": 0.9941185328304899,
+          "reputation_score": 0.5233705035706522
+        }
+      },
+      {
+        "timestamp": 1755895490.8577013,
+        "attack_type": "AttackType.DENIAL_OF_SERVICE",
+        "severity": 0.8934647659297784,
+        "source_id": "network_node_90",
+        "confidence": 0.85,
+        "affected_components": [],
+        "mitigation_actions": [
+          "traffic_shaping",
+          "load_balancing",
+          "resource_allocation_optimization",
+          "emergency_failover"
+        ],
+        "evidence": {
+          "traffic_patterns": {
+            "packet_rate": 893.4647659297784,
+            "bandwidth_usage": 0.8366077010957732,
+            "connection_attempts": 45,
+            "unusual_protocols": true,
+            "geographic_distribution": 0.8826005909312977
+          }
+        }
+      },
+      {
+        "timestamp": 1755895490.8579466,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.785590392875913,
+        "source_id": "vehicle_0",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.571180785751826,
+          "gradient_direction_similarity": 0.4343150799319704,
+          "update_frequency": 3.408273439119278,
+          "accuracy_impact": -0.030503317408338226,
+          "loss_reduction": 0.2714152599026717
+        }
+      },
+      {
+        "timestamp": 1755895490.8580136,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.7608744915478847,
+        "source_id": "vehicle_3",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5217489830957693,
+          "gradient_direction_similarity": 0.4825998414795288,
+          "update_frequency": 3.8876078131335454,
+          "accuracy_impact": -0.13450363446379582,
+          "loss_reduction": -0.04818265502485741
+        }
+      },
+      {
+        "timestamp": 1755895490.8580484,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.672518172318979,
+        "source_id": "vehicle_3",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5217489830957693,
+          "gradient_direction_similarity": 0.4825998414795288,
+          "update_frequency": 3.8876078131335454,
+          "accuracy_impact": -0.13450363446379582,
+          "loss_reduction": -0.04818265502485741
+        }
+      },
+      {
+        "timestamp": 1755895490.8580801,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8760717548729755,
+        "source_id": "vehicle_4",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.752143509745951,
+          "gradient_direction_similarity": 0.7685438491820654,
+          "update_frequency": 1.484473616890186,
+          "accuracy_impact": -0.11959572795136506,
+          "loss_reduction": 0.12250291210574235
+        }
+      },
+      {
+        "timestamp": 1755895490.8581114,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.10697560672059575,
+        "source_id": "vehicle_5",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.2139512134411915,
+          "gradient_direction_similarity": 0.435664959377138,
+          "update_frequency": 4.998860645134909,
+          "accuracy_impact": -0.017851988890115827,
+          "loss_reduction": 0.15480527620153903
+        }
+      },
+      {
+        "timestamp": 1755895490.8581388,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.6016423299207618,
+        "source_id": "participant_9",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.841676739876989,
+          "contribution_quality": 0.3983576700792381,
+          "communication_frequency": 2.6048678620328483,
+          "resource_claims": 0.2584117375478533,
+          "reputation_score": 0.41273321527180934
+        }
+      },
+      {
+        "timestamp": 1755895493.859908,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.42189436860281865,
+        "source_id": "vehicle_1",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.8437887372056373,
+          "gradient_direction_similarity": 0.47146514836705644,
+          "update_frequency": 1.021919871669808,
+          "accuracy_impact": -0.19904906360793545,
+          "loss_reduction": 0.0475499775425646
+        }
+      },
+      {
+        "timestamp": 1755895493.8601224,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8531112539538039,
+        "source_id": "vehicle_2",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.7062225079076079,
+          "gradient_direction_similarity": 0.44795502892495065,
+          "update_frequency": 1.5262764538331846,
+          "accuracy_impact": -0.1520716072286328,
+          "loss_reduction": 0.12062386614638593
+        }
+      },
+      {
+        "timestamp": 1755895493.860176,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.3485062777905084,
+        "source_id": "vehicle_3",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.6970125555810168,
+          "gradient_direction_similarity": 0.4321543940051923,
+          "update_frequency": 4.249530586181983,
+          "accuracy_impact": -0.06060634564417164,
+          "loss_reduction": 0.29945790262684
+        }
+      },
+      {
+        "timestamp": 1755895493.8602204,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8211970884030824,
+        "source_id": "vehicle_4",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6423941768061647,
+          "gradient_direction_similarity": 0.310913791200443,
+          "update_frequency": 3.1345951111389203,
+          "accuracy_impact": 0.02823850044936993,
+          "loss_reduction": 0.09496300495786364
+        }
+      },
+      {
+        "timestamp": 1755895493.8602512,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.35552838754431315,
+        "source_id": "vehicle_7",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.7110567750886263,
+          "gradient_direction_similarity": 0.41787872781201585,
+          "update_frequency": 1.1199367115582732,
+          "accuracy_impact": 0.018897013044782224,
+          "loss_reduction": 0.2029506751695239
+        }
+      },
+      {
+        "timestamp": 1755895493.8602786,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.021371968987986833,
+        "source_id": "vehicle_9",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.042743937975973666,
+          "gradient_direction_similarity": 0.4436735185809801,
+          "update_frequency": 2.3177915357812813,
+          "accuracy_impact": -0.1986615710991632,
+          "loss_reduction": 0.10063190050101567
+        }
+      },
+      {
+        "timestamp": 1755895493.8603048,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.7593880124096586,
+        "source_id": "vehicle_11",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5187760248193172,
+          "gradient_direction_similarity": 0.4358662274328168,
+          "update_frequency": 1.639524793307706,
+          "accuracy_impact": 0.07664521544804392,
+          "loss_reduction": 0.2317326097571454
+        }
+      },
+      {
+        "timestamp": 1755895493.8603299,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8972568524653748,
+        "source_id": "vehicle_12",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.7945137049307496,
+          "gradient_direction_similarity": 0.46848152952755207,
+          "update_frequency": 4.616497692968786,
+          "accuracy_impact": -0.08841185094468905,
+          "loss_reduction": 0.0296756172181456
+        }
+      },
+      {
+        "timestamp": 1755895493.8603542,
+        "attack_type": "AttackType.SYBIL",
+        "severity": 0.4,
+        "source_id": "identity_verification_system",
+        "confidence": 0.75,
+        "affected_components": [
+          "participant_registry"
+        ],
+        "mitigation_actions": [
+          "proof_of_work_validation",
+          "identity_verification",
+          "resource_commitment_proof",
+          "social_network_analysis"
+        ],
+        "evidence": {
+          "suspicious_count": 4
+        }
+      },
+      {
+        "timestamp": 1755895493.860381,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5900852041431588,
+        "source_id": "participant_12",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8067480146678836,
+          "contribution_quality": 0.40991479585684115,
+          "communication_frequency": 2.1031921983585598,
+          "resource_claims": 1.7348066442474739,
+          "reputation_score": 0.4683933867830691
+        }
+      },
+      {
+        "timestamp": 1755895493.8604054,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5935173919608348,
+        "source_id": "participant_15",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8091941547979323,
+          "contribution_quality": 0.4064826080391652,
+          "communication_frequency": 1.0223779171951985,
+          "resource_claims": 0.882203249686985,
+          "reputation_score": 0.7489129719621834
+        }
+      },
+      {
+        "timestamp": 1755895493.8604293,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5309061345188373,
+        "source_id": "participant_24",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8605988347959986,
+          "contribution_quality": 0.46909386548116266,
+          "communication_frequency": 2.48745650766829,
+          "resource_claims": 0.4909446531635454,
+          "reputation_score": 0.9103969190237866
+        }
+      },
+      {
+        "timestamp": 1755895496.863414,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.9680002371608056,
+        "source_id": "vehicle_0",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.9360004743216113,
+          "gradient_direction_similarity": 0.5419613728012093,
+          "update_frequency": 3.6861637622800103,
+          "accuracy_impact": 0.08633072127751518,
+          "loss_reduction": 0.248916333447694
+        }
+      },
+      {
+        "timestamp": 1755895496.8636405,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.8040721050662956,
+        "source_id": "vehicle_1",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.22648299471876843,
+          "gradient_direction_similarity": 0.767589686277148,
+          "update_frequency": 4.82472748636506,
+          "accuracy_impact": -0.1608144210132591,
+          "loss_reduction": -0.073955847000894
+        }
+      },
+      {
+        "timestamp": 1755895496.8636913,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.7620596728008547,
+        "source_id": "vehicle_2",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5241193456017095,
+          "gradient_direction_similarity": 0.827134219457943,
+          "update_frequency": 0.8007223748092593,
+          "accuracy_impact": -0.08091693173759787,
+          "loss_reduction": 0.22470859347191233
+        }
+      },
+      {
+        "timestamp": 1755895496.863756,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8392918405219857,
+        "source_id": "vehicle_7",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6785836810439714,
+          "gradient_direction_similarity": 0.6743460608772944,
+          "update_frequency": 1.9354577548136331,
+          "accuracy_impact": -0.08518499060309337,
+          "loss_reduction": 0.052947663306561976
+        }
+      },
+      {
+        "timestamp": 1755895496.8637948,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.5957362591238647,
+        "source_id": "vehicle_9",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.1914725182477295,
+          "gradient_direction_similarity": 0.4057308304602621,
+          "update_frequency": 1.0267485996229984,
+          "accuracy_impact": -0.15252470279659175,
+          "loss_reduction": 0.10146228347922301
+        }
+      },
+      {
+        "timestamp": 1755895496.8638234,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8098577308815583,
+        "source_id": "vehicle_10",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6197154617631166,
+          "gradient_direction_similarity": 0.41387425772683334,
+          "update_frequency": 1.5115623467692783,
+          "accuracy_impact": 0.04183593792917517,
+          "loss_reduction": 0.16825929287520633
+        }
+      },
+      {
+        "timestamp": 1755895496.8638499,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.33344444427535935,
+        "source_id": "vehicle_11",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.6668888885507187,
+          "gradient_direction_similarity": 0.44312498649232096,
+          "update_frequency": 3.740171916791888,
+          "accuracy_impact": 0.0018085884039571454,
+          "loss_reduction": 0.18217045516035754
+        }
+      }
+    ],
+    "active_threats": [
+      {
+        "timestamp": 1755895487.85245,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.4445789903096025,
+        "source_id": "vehicle_0",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.889157980619205,
+          "gradient_direction_similarity": 0.47629316224429163,
+          "update_frequency": 2.896366269736996,
+          "accuracy_impact": -0.13517079028743764,
+          "loss_reduction": -0.08123957358280376
+        }
+      },
+      {
+        "timestamp": 1755895487.852917,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.6758539514371882,
+        "source_id": "vehicle_0",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.889157980619205,
+          "gradient_direction_similarity": 0.47629316224429163,
+          "update_frequency": 2.896366269736996,
+          "accuracy_impact": -0.13517079028743764,
+          "loss_reduction": -0.08123957358280376
+        }
+      },
+      {
+        "timestamp": 1755895487.8530006,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8712526177851555,
+        "source_id": "vehicle_1",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.742505235570311,
+          "gradient_direction_similarity": 0.7089732545579681,
+          "update_frequency": 4.065234519685128,
+          "accuracy_impact": -0.08129730565121096,
+          "loss_reduction": 0.2056250398696486
+        }
+      },
+      {
+        "timestamp": 1755895487.8530412,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.6477474057741504,
+        "source_id": "vehicle_5",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.32570445109475776,
+          "gradient_direction_similarity": 0.5593439123249591,
+          "update_frequency": 4.756112731331327,
+          "accuracy_impact": -0.12954948115483006,
+          "loss_reduction": -0.08008771526106942
+        }
+      },
+      {
+        "timestamp": 1755895487.8530767,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8436517485623,
+        "source_id": "vehicle_6",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6873034971246,
+          "gradient_direction_similarity": 0.6315412740823574,
+          "update_frequency": 0.7789670738285109,
+          "accuracy_impact": 0.013936705808900968,
+          "loss_reduction": 0.2481780385870733
+        }
+      },
+      {
+        "timestamp": 1755895487.8531096,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.5001384611839073,
+        "source_id": "vehicle_8",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.2322604371926345,
+          "gradient_direction_similarity": 0.8128834770974707,
+          "update_frequency": 0.8890073589672096,
+          "accuracy_impact": -0.10002769223678146,
+          "loss_reduction": -0.0337551399608457
+        }
+      },
+      {
+        "timestamp": 1755895487.8531394,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.6662993858848387,
+        "source_id": "participant_1",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8677482114973594,
+          "contribution_quality": 0.3337006141151613,
+          "communication_frequency": 2.2340126171294634,
+          "resource_claims": 0.5192434079159203,
+          "reputation_score": 0.7288383383757442
+        }
+      },
+      {
+        "timestamp": 1755895487.8531675,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5002265033245097,
+        "source_id": "participant_7",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.920522133518824,
+          "contribution_quality": 0.4997734966754903,
+          "communication_frequency": 2.1874579687959885,
+          "resource_claims": 0.9941185328304899,
+          "reputation_score": 0.5233705035706522
+        }
+      },
+      {
+        "timestamp": 1755895490.8577013,
+        "attack_type": "AttackType.DENIAL_OF_SERVICE",
+        "severity": 0.8934647659297784,
+        "source_id": "network_node_90",
+        "confidence": 0.85,
+        "affected_components": [],
+        "mitigation_actions": [
+          "traffic_shaping",
+          "load_balancing",
+          "resource_allocation_optimization",
+          "emergency_failover"
+        ],
+        "evidence": {
+          "traffic_patterns": {
+            "packet_rate": 893.4647659297784,
+            "bandwidth_usage": 0.8366077010957732,
+            "connection_attempts": 45,
+            "unusual_protocols": true,
+            "geographic_distribution": 0.8826005909312977
+          }
+        }
+      },
+      {
+        "timestamp": 1755895490.8579466,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.785590392875913,
+        "source_id": "vehicle_0",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.571180785751826,
+          "gradient_direction_similarity": 0.4343150799319704,
+          "update_frequency": 3.408273439119278,
+          "accuracy_impact": -0.030503317408338226,
+          "loss_reduction": 0.2714152599026717
+        }
+      },
+      {
+        "timestamp": 1755895490.8580136,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.7608744915478847,
+        "source_id": "vehicle_3",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5217489830957693,
+          "gradient_direction_similarity": 0.4825998414795288,
+          "update_frequency": 3.8876078131335454,
+          "accuracy_impact": -0.13450363446379582,
+          "loss_reduction": -0.04818265502485741
+        }
+      },
+      {
+        "timestamp": 1755895490.8580484,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.672518172318979,
+        "source_id": "vehicle_3",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5217489830957693,
+          "gradient_direction_similarity": 0.4825998414795288,
+          "update_frequency": 3.8876078131335454,
+          "accuracy_impact": -0.13450363446379582,
+          "loss_reduction": -0.04818265502485741
+        }
+      },
+      {
+        "timestamp": 1755895490.8580801,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8760717548729755,
+        "source_id": "vehicle_4",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.752143509745951,
+          "gradient_direction_similarity": 0.7685438491820654,
+          "update_frequency": 1.484473616890186,
+          "accuracy_impact": -0.11959572795136506,
+          "loss_reduction": 0.12250291210574235
+        }
+      },
+      {
+        "timestamp": 1755895490.8581114,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.10697560672059575,
+        "source_id": "vehicle_5",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.2139512134411915,
+          "gradient_direction_similarity": 0.435664959377138,
+          "update_frequency": 4.998860645134909,
+          "accuracy_impact": -0.017851988890115827,
+          "loss_reduction": 0.15480527620153903
+        }
+      },
+      {
+        "timestamp": 1755895490.8581388,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.6016423299207618,
+        "source_id": "participant_9",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.841676739876989,
+          "contribution_quality": 0.3983576700792381,
+          "communication_frequency": 2.6048678620328483,
+          "resource_claims": 0.2584117375478533,
+          "reputation_score": 0.41273321527180934
+        }
+      },
+      {
+        "timestamp": 1755895493.859908,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.42189436860281865,
+        "source_id": "vehicle_1",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.8437887372056373,
+          "gradient_direction_similarity": 0.47146514836705644,
+          "update_frequency": 1.021919871669808,
+          "accuracy_impact": -0.19904906360793545,
+          "loss_reduction": 0.0475499775425646
+        }
+      },
+      {
+        "timestamp": 1755895493.8601224,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8531112539538039,
+        "source_id": "vehicle_2",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.7062225079076079,
+          "gradient_direction_similarity": 0.44795502892495065,
+          "update_frequency": 1.5262764538331846,
+          "accuracy_impact": -0.1520716072286328,
+          "loss_reduction": 0.12062386614638593
+        }
+      },
+      {
+        "timestamp": 1755895493.860176,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.3485062777905084,
+        "source_id": "vehicle_3",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.6970125555810168,
+          "gradient_direction_similarity": 0.4321543940051923,
+          "update_frequency": 4.249530586181983,
+          "accuracy_impact": -0.06060634564417164,
+          "loss_reduction": 0.29945790262684
+        }
+      },
+      {
+        "timestamp": 1755895493.8602204,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8211970884030824,
+        "source_id": "vehicle_4",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6423941768061647,
+          "gradient_direction_similarity": 0.310913791200443,
+          "update_frequency": 3.1345951111389203,
+          "accuracy_impact": 0.02823850044936993,
+          "loss_reduction": 0.09496300495786364
+        }
+      },
+      {
+        "timestamp": 1755895493.8602512,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.35552838754431315,
+        "source_id": "vehicle_7",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.7110567750886263,
+          "gradient_direction_similarity": 0.41787872781201585,
+          "update_frequency": 1.1199367115582732,
+          "accuracy_impact": 0.018897013044782224,
+          "loss_reduction": 0.2029506751695239
+        }
+      },
+      {
+        "timestamp": 1755895493.8602786,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.021371968987986833,
+        "source_id": "vehicle_9",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.042743937975973666,
+          "gradient_direction_similarity": 0.4436735185809801,
+          "update_frequency": 2.3177915357812813,
+          "accuracy_impact": -0.1986615710991632,
+          "loss_reduction": 0.10063190050101567
+        }
+      },
+      {
+        "timestamp": 1755895493.8603048,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.7593880124096586,
+        "source_id": "vehicle_11",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5187760248193172,
+          "gradient_direction_similarity": 0.4358662274328168,
+          "update_frequency": 1.639524793307706,
+          "accuracy_impact": 0.07664521544804392,
+          "loss_reduction": 0.2317326097571454
+        }
+      },
+      {
+        "timestamp": 1755895493.8603299,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8972568524653748,
+        "source_id": "vehicle_12",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.7945137049307496,
+          "gradient_direction_similarity": 0.46848152952755207,
+          "update_frequency": 4.616497692968786,
+          "accuracy_impact": -0.08841185094468905,
+          "loss_reduction": 0.0296756172181456
+        }
+      },
+      {
+        "timestamp": 1755895493.8603542,
+        "attack_type": "AttackType.SYBIL",
+        "severity": 0.4,
+        "source_id": "identity_verification_system",
+        "confidence": 0.75,
+        "affected_components": [
+          "participant_registry"
+        ],
+        "mitigation_actions": [
+          "proof_of_work_validation",
+          "identity_verification",
+          "resource_commitment_proof",
+          "social_network_analysis"
+        ],
+        "evidence": {
+          "suspicious_count": 4
+        }
+      },
+      {
+        "timestamp": 1755895493.860381,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5900852041431588,
+        "source_id": "participant_12",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8067480146678836,
+          "contribution_quality": 0.40991479585684115,
+          "communication_frequency": 2.1031921983585598,
+          "resource_claims": 1.7348066442474739,
+          "reputation_score": 0.4683933867830691
+        }
+      },
+      {
+        "timestamp": 1755895493.8604054,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5935173919608348,
+        "source_id": "participant_15",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8091941547979323,
+          "contribution_quality": 0.4064826080391652,
+          "communication_frequency": 1.0223779171951985,
+          "resource_claims": 0.882203249686985,
+          "reputation_score": 0.7489129719621834
+        }
+      },
+      {
+        "timestamp": 1755895493.8604293,
+        "attack_type": "AttackType.BYZANTINE",
+        "severity": 0.5309061345188373,
+        "source_id": "participant_24",
+        "confidence": 0.85,
+        "affected_components": [
+          "consensus_mechanism"
+        ],
+        "mitigation_actions": [
+          "reputation_based_filtering",
+          "consensus_verification",
+          "multi_signature_validation",
+          "stake_based_weighting"
+        ],
+        "evidence": {
+          "participation_rate": 0.8605988347959986,
+          "contribution_quality": 0.46909386548116266,
+          "communication_frequency": 2.48745650766829,
+          "resource_claims": 0.4909446531635454,
+          "reputation_score": 0.9103969190237866
+        }
+      },
+      {
+        "timestamp": 1755895496.863414,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.9680002371608056,
+        "source_id": "vehicle_0",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.9360004743216113,
+          "gradient_direction_similarity": 0.5419613728012093,
+          "update_frequency": 3.6861637622800103,
+          "accuracy_impact": 0.08633072127751518,
+          "loss_reduction": 0.248916333447694
+        }
+      },
+      {
+        "timestamp": 1755895496.8636405,
+        "attack_type": "AttackType.BACKDOOR",
+        "severity": 0.8040721050662956,
+        "source_id": "vehicle_1",
+        "confidence": 0.8,
+        "affected_components": [
+          "classification_layer"
+        ],
+        "mitigation_actions": [
+          "trigger_detection",
+          "model_inspection",
+          "clean_label_validation",
+          "differential_testing"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.22648299471876843,
+          "gradient_direction_similarity": 0.767589686277148,
+          "update_frequency": 4.82472748636506,
+          "accuracy_impact": -0.1608144210132591,
+          "loss_reduction": -0.073955847000894
+        }
+      },
+      {
+        "timestamp": 1755895496.8636913,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.7620596728008547,
+        "source_id": "vehicle_2",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.5241193456017095,
+          "gradient_direction_similarity": 0.827134219457943,
+          "update_frequency": 0.8007223748092593,
+          "accuracy_impact": -0.08091693173759787,
+          "loss_reduction": 0.22470859347191233
+        }
+      },
+      {
+        "timestamp": 1755895496.863756,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8392918405219857,
+        "source_id": "vehicle_7",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6785836810439714,
+          "gradient_direction_similarity": 0.6743460608772944,
+          "update_frequency": 1.9354577548136331,
+          "accuracy_impact": -0.08518499060309337,
+          "loss_reduction": 0.052947663306561976
+        }
+      },
+      {
+        "timestamp": 1755895496.8637948,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.5957362591238647,
+        "source_id": "vehicle_9",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.1914725182477295,
+          "gradient_direction_similarity": 0.4057308304602621,
+          "update_frequency": 1.0267485996229984,
+          "accuracy_impact": -0.15252470279659175,
+          "loss_reduction": 0.10146228347922301
+        }
+      },
+      {
+        "timestamp": 1755895496.8638234,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.8098577308815583,
+        "source_id": "vehicle_10",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 1.6197154617631166,
+          "gradient_direction_similarity": 0.41387425772683334,
+          "update_frequency": 1.5115623467692783,
+          "accuracy_impact": 0.04183593792917517,
+          "loss_reduction": 0.16825929287520633
+        }
+      },
+      {
+        "timestamp": 1755895496.8638499,
+        "attack_type": "AttackType.POISONING",
+        "severity": 0.33344444427535935,
+        "source_id": "vehicle_11",
+        "confidence": 0.9,
+        "affected_components": [
+          "global_model"
+        ],
+        "mitigation_actions": [
+          "gradient_clipping",
+          "robust_aggregation",
+          "byzantine_resilient_aggregation",
+          "outlier_detection"
+        ],
+        "evidence": {
+          "gradient_magnitude": 0.6668888885507187,
+          "gradient_direction_similarity": 0.44312498649232096,
+          "update_frequency": 3.740171916791888,
+          "accuracy_impact": 0.0018085884039571454,
+          "loss_reduction": 0.18217045516035754
+        }
+      }
+    ],
+    "security_metrics_history": {
+      "current_metrics": {
+        "threat_level": "ThreatLevel.MEDIUM",
+        "attack_detection_rate": 0.99,
+        "false_positive_rate": 0.02,
+        "response_time": 17.0,
+        "privacy_budget_remaining": 0.7844788819094036,
+        "encryption_overhead": 0.15,
+        "integrity_score": 0.0,
+        "resilience_factor": 1.0
+      },
+      "configuration": {
+        "threat_assessment_interval": 3.0,
+        "max_threat_tolerance": 0.8,
+        "privacy_budget_total": 10.0,
+        "encryption_key_rotation_interval": 3600,
+        "blockchain_validation_period": 300,
+        "ids_sensitivity": 0.75,
+        "adaptive_response_enabled": true,
+        "quantum_resistance_level": "post_quantum",
+        "emergency_shutdown_threshold": 0.95,
+        "logging_level": "INFO",
+        "metrics_retention_period": 86400
+      }
+    },
+    "defensive_actions": {
+      "mitigation_history": {
+        "gradient_clipping": 21,
+        "robust_aggregation": 21,
+        "byzantine_resilient_aggregation": 21,
+        "outlier_detection": 21,
+        "trigger_detection": 5,
+        "model_inspection": 5,
+        "clean_label_validation": 5,
+        "differential_testing": 5,
+        "reputation_based_filtering": 6,
+        "consensus_verification": 6,
+        "multi_signature_validation": 6,
+        "stake_based_weighting": 6,
+        "traffic_shaping": 1,
+        "load_balancing": 1,
+        "resource_allocation_optimization": 1,
+        "emergency_failover": 1,
+        "proof_of_work_validation": 1,
+        "identity_verification": 1,
+        "resource_commitment_proof": 1,
+        "social_network_analysis": 1
+      },
+      "available_defenses": {
+        
