@@ -6,14 +6,13 @@ build-backend = "setuptools.build_meta"
 name = "fed-vit-autorl"
 description = "Federated reinforcement learning framework for Vision Transformer based autonomous vehicles"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Daniel Schmidt", email = "daniel@terragon.ai"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -68,6 +67,11 @@ Repository = "https://github.com/terragon-labs/fed-vit-autorl"
 
 [tool.setuptools_scm]
 write_to = "fed_vit_autorl/_version.py"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fed_vit_autorl*"]
+exclude = ["tests*", "configs*", "monitoring*", "*_env*", "publication_materials*", "research_validation_results*", "final_autonomous_sdlc_results*"]
 
 [tool.ruff]
 target-version = "py39"

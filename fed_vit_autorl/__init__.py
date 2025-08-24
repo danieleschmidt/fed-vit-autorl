@@ -17,6 +17,7 @@ try:
     from .federated.server import FederatedServer
     from .federated.aggregation import FedAvgAggregator
     from .reinforcement.ppo_federated import FederatedPPO
+    from .reinforcement.sac_federated import FederatedSAC
     from .edge.optimization import EdgeOptimizer
     from .simulation.carla_env import CARLAFederatedEnv
     _TORCH_AVAILABLE = True
@@ -37,6 +38,7 @@ except ImportError as e:
     FederatedServer = _MissingDependency
     FedAvgAggregator = _MissingDependency
     FederatedPPO = _MissingDependency
+    FederatedSAC = _MissingDependency
     EdgeOptimizer = _MissingDependency
     CARLAFederatedEnv = _MissingDependency
 
@@ -149,6 +151,7 @@ __all__ = [
     "FederatedServer",
     "FedAvgAggregator",
     "FederatedPPO",
+    "FederatedSAC",
     "EdgeOptimizer",
     "CARLAFederatedEnv",
     "FederatedVehicleRL",

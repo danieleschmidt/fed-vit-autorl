@@ -1,0 +1,33 @@
+{
+  "training_completed": true,
+  "num_rounds": 3,
+  "num_clients": 5,
+  "final_status": {
+    "state": "training",
+    "uptime_seconds": 25.222495079040527,
+    "num_clients": 5,
+    "blocked_clients": 0,
+    "security_alerts": 0,
+    "health": {
+      "status": "healthy",
+      "health_score": 1.0,
+      "avg_loss": 1.2303846299648284,
+      "avg_accuracy": 0.675,
+      "avg_training_time": 1.304090690612793,
+      "avg_memory_usage": 0.0,
+      "total_alerts": 0,
+      "recent_alerts": [],
+      "metrics_count": 15
+    },
+    "client_reputations": {
+      "0": 0.8,
+      "1": 0.8,
+      "2": 0.8,
+      "3": 0.8,
+      "4": 0.8
+    },
+    "memory_usage_mb": 0
+  },
+  "security_level": "medium",
+  "timestamp": "2025-08-24T02:21:10.693287"
+}
