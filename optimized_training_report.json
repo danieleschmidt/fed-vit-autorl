@@ -1,0 +1,119 @@
+{
+  "training_completed": true,
+  "num_rounds": 3,
+  "initial_clients": 5,
+  "final_stats": {
+    "performance": {
+      "training_task": {
+        "count": 11,
+        "mean": 1.5403675509091128,
+        "std": 1.3106048019593797,
+        "min": 0.03127160300005016,
+        "max": 3.343240714999979,
+        "p50": 2.22859495900002,
+        "p95": 3.085173786500036,
+        "p99": 3.2916273292999905
+      },
+      "parallel_training": {
+        "count": 3,
+        "mean": 8.04378006733331,
+        "std": 0.6471992478126705,
+        "min": 7.175444106999976,
+        "max": 8.728536942999995,
+        "p50": 8.227359151999963,
+        "p95": 8.678419163899992,
+        "p99": 8.718513387179994
+      },
+      "federated_averaging": {
+        "count": 3,
+        "mean": 0.10914127333334515,
+        "std": 0.007444890981164358,
+        "min": 0.098743216999992,
+        "max": 0.11577205600008256,
+        "p50": 0.11290854699996089,
+        "p95": 0.11548570510007039,
+        "p99": 0.11571478582008013
+      },
+      "evaluation": {
+        "count": 3,
+        "mean": 0.4093127383332937,
+        "std": 0.08909911599826151,
+        "min": 0.2955538639999986,
+        "max": 0.5131194339999183,
+        "p50": 0.41926491699996404,
+        "p95": 0.5037339822999229,
+        "p99": 0.5112423436599193
+      }
+    },
+    "cache": {
+      "size": 10,
+      "max_size": 2000,
+      "hit_rate": 1.0,
+      "total_accesses": 10
+    },
+    "load_balancer": {
+      "client_loads": {
+        "0": 0.0,
+        "1": 0.0,
+        "3": 0.0,
+        "2": 0.0,
+        "4": 0.0
+      },
+      "client_performance": {
+        "0": {
+          "avg_time": 0.9998024979149984,
+          "success_rate": 1.0
+        },
+        "1": {
+          "avg_time": 1.2149550995500102,
+          "success_rate": 1.0
+        },
+        "2": {
+          "avg_time": 0.7507881528030071,
+          "success_rate": 1.0
+        },
+        "3": {
+          "avg_time": 1.225568437695002,
+          "success_rate": 1.0
+        },
+        "4": {
+          "avg_time": 0.9761226175800041,
+          "success_rate": 1.0
+        }
+      },
+      "total_load": 0.0
+    },
+    "auto_scaler": {
+      "current_clients": 2,
+      "min_clients": 2,
+      "max_clients": 20,
+      "metrics_window_size": 0,
+      "time_since_last_scale": 1756002322.7428172
+    },
+    "model_pool": {
+      "total_created": 2,
+      "available": 2,
+      "in_use": 0,
+      "min_workers": 2,
+      "max_workers": 10
+    },
+    "optimizer_pool": {
+      "total_created": 2,
+      "available": 2,
+      "in_use": 0,
+      "min_workers": 2,
+      "max_workers": 10
+    },
+    "system_resources": {
+      "cpu_percent": 0.0,
+      "memory_percent": 56.9,
+      "disk_usage": 21.6
+    },
+    "training_queue_size": 0,
+    "results_queue_size": 0,
+    "active_clients": 5,
+    "uptime_seconds": 29.288904666900635
+  },
+  "auto_scaling_enabled": true,
+  "timestamp": "2025-08-24T02:25:22.743191"
+}
