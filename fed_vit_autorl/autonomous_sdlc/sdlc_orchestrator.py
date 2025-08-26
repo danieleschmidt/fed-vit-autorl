@@ -25,6 +25,7 @@ class GenerationPhase(Enum):
     GENERATION_2 = "generation_2_robust" 
     GENERATION_3 = "generation_3_optimized"
     GENERATION_4 = "generation_4_revolutionary"
+    GENERATION_5 = "generation_5_cognitive"
     CONTINUOUS_EVOLUTION = "continuous_evolution"
 
 
