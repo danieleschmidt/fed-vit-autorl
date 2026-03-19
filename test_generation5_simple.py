@@ -1,1 +1,0 @@
-I need permission to edit the file to resolve the merge conflict. The file currently has conflict markers that need to be resolved. I'll combine both test suites - the consciousness module tests from HEAD and the SDLC orchestrator tests from pr-22 - into a comprehensive test file that preserves all functionality from both versions.

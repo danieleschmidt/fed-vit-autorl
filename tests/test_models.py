@@ -1,99 +1,77 @@
-"""Tests for vision transformer models."""
+"""Tests for TinyViT model."""
 
 import pytest
 import torch
+from fed_vit_autorl.models import TinyViT, PatchEmbedding, TransformerBlock
 
-from fed_vit_autorl.models import ViTPerception, DetectionHead, SegmentationHead
+
+class TestPatchEmbedding:
+    def test_output_shape_patch8(self):
+        patch_embed = PatchEmbedding(img_size=32, patch_size=8, in_channels=3, embed_dim=64)
+        x = torch.randn(2, 3, 32, 32)
+        out = patch_embed(x)
+        assert out.shape == (2, 16, 64)  # (32/8)^2 = 16 patches
+
+    def test_output_shape_patch16(self):
+        patch_embed = PatchEmbedding(img_size=32, patch_size=16, in_channels=3, embed_dim=64)
+        x = torch.randn(2, 3, 32, 32)
+        out = patch_embed(x)
+        assert out.shape == (2, 4, 64)   # (32/16)^2 = 4 patches
+
+    def test_invalid_patch_size(self):
+        with pytest.raises(AssertionError):
+            PatchEmbedding(img_size=32, patch_size=7)
 
 
-class TestViTPerception:
-    """Test cases for ViTPerception model."""
+class TestTransformerBlock:
+    def test_output_shape(self):
+        block = TransformerBlock(embed_dim=64, num_heads=4)
+        x = torch.randn(2, 16, 64)
+        out = block(x)
+        assert out.shape == x.shape
 
-    def test_vit_perception_init(self):
-        """Test ViTPerception initialization."""
-        model = ViTPerception(
-            img_size=224,
-            patch_size=16,
-            num_classes=100,
-            embed_dim=768,
-            depth=12,
-            num_heads=12,
+    def test_residual_connection(self):
+        """Output should differ from input (not all zeros)."""
+        block = TransformerBlock(embed_dim=64, num_heads=4)
+        x = torch.randn(2, 16, 64)
+        out = block(x)
+        assert not torch.allclose(out, x)
+
+
+class TestTinyViT:
+    def setup_method(self):
+        self.model = TinyViT(
+            img_size=32,
+            patch_size=8,
+            num_classes=25,
+            embed_dim=64,
+            depth=2,
+            num_heads=4,
         )
 
-        assert model.img_size == 224
-        assert model.patch_size == 16
-        assert model.num_classes == 100
+    def test_output_shape(self):
+        x = torch.randn(4, 3, 32, 32)
+        out = self.model(x)
+        assert out.shape == (4, 25)
 
-    def test_vit_perception_forward(self):
-        """Test ViTPerception forward pass."""
-        model = ViTPerception(img_size=224, num_classes=10)
-        x = torch.randn(2, 3, 224, 224)
+    def test_batch_size_1(self):
+        x = torch.randn(1, 3, 32, 32)
+        out = self.model(x)
+        assert out.shape == (1, 25)
 
-        output = model(x)
+    def test_parameter_count(self):
+        n = self.model.num_parameters()
+        assert n > 0
+        assert n < 5_000_000  # Should be tiny
 
-        assert output.shape == (2, 10)
+    def test_depth3(self):
+        model = TinyViT(depth=3, embed_dim=64, num_heads=4)
+        x = torch.randn(2, 3, 32, 32)
+        out = model(x)
+        assert out.shape == (2, 25)
 
-    def test_vit_perception_get_features(self):
-        """Test ViTPerception feature extraction."""
-        model = ViTPerception(img_size=224, embed_dim=768)
-        x = torch.randn(2, 3, 224, 224)
-
-        features = model.get_features(x)
-
-        assert features.shape == (2, 768)
-
-
-class TestDetectionHead:
-    """Test cases for DetectionHead."""
-
-    def test_detection_head_init(self):
-        """Test DetectionHead initialization."""
-        head = DetectionHead(
-            input_dim=768,
-            num_classes=20,
-            num_anchors=9,
-        )
-
-        assert head.input_dim == 768
-        assert head.num_classes == 20
-        assert head.num_anchors == 9
-
-    def test_detection_head_forward(self):
-        """Test DetectionHead forward pass."""
-        head = DetectionHead(input_dim=768, num_classes=20, num_anchors=9)
-        features = torch.randn(2, 768)
-
-        output = head(features)
-
-        assert 'classes' in output
-        assert 'boxes' in output
-        assert 'objectness' in output
-        assert output['classes'].shape == (2, 9, 20)
-        assert output['boxes'].shape == (2, 9, 4)
-        assert output['objectness'].shape == (2, 9)
-
-
-class TestSegmentationHead:
-    """Test cases for SegmentationHead."""
-
-    def test_segmentation_head_init(self):
-        """Test SegmentationHead initialization."""
-        head = SegmentationHead(
-            input_dim=768,
-            num_classes=10,
-            img_size=224,
-        )
-
-        assert head.input_dim == 768
-        assert head.num_classes == 10
-        assert head.img_size == 224
-
-    def test_segmentation_head_forward(self):
-        """Test SegmentationHead forward pass."""
-        head = SegmentationHead(input_dim=768, num_classes=10, img_size=224)
-        features = torch.randn(2, 768)
-
-        output = head(features)
-
-        assert 'segmentation' in output
-        assert output['segmentation'].shape == (2, 10, 224, 224)
+    def test_no_nan_in_output(self):
+        x = torch.randn(4, 3, 32, 32)
+        out = self.model(x)
+        assert not torch.isnan(out).any()
+        assert not torch.isinf(out).any()
